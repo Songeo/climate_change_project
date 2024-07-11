@@ -85,3 +85,10 @@ cd climate_change_project
 source("setup.R")
 ```
 
+### Download data
+
+1. Download data from 
+[Drive Link](https://drive.google.com/drive/folders/1EpnqGvAHDo0NDhW5E86HlN9H6RxGvfex?usp=drive_link)
+
+Data source: [Climate Change Indicators Dashboard](https://climatedata.imf.org/pages/access-data) 
+
