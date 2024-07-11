@@ -111,8 +111,8 @@ data_panel |>
   pivot_longer(carbon_dioxide:nitrous_oxide, 
                names_to = "gas_type", 
                values_to = "value") |> 
-  mutate(nas = (!is.na(value))) |> 
-  ggplot(aes(x = year, y = iso3, fill = nas) ) + 
+  mutate(no_nas = (!is.na(value))) |> 
+  ggplot(aes(x = year, y = iso3, fill = no_nas) ) + 
   geom_tile(color = "white") + 
   facet_wrap(~gas_type, nrow = 1) + 
   theme(axis.text.y = element_text(size = 4),
@@ -125,8 +125,8 @@ data_panel |>
   pivot_longer(starts_with("tax"), 
                names_to = "tax_type", 
                values_to = "value") |> 
-  mutate(nas = (!is.na(value))) |> 
-  ggplot(aes(x = year, y = iso3, fill = nas) ) + 
+  mutate(no_nas = !(is.na(value))) |> 
+  ggplot(aes(x = year, y = iso3, fill = no_nas) ) + 
   geom_tile(color = "white") + 
   facet_wrap(~tax_type, nrow = 1) + 
   theme(axis.text.y = element_text(size = 4), 
