@@ -88,3 +88,5 @@ source("setup.R")
 
 Data source: [Climate Change Indicators Dashboard](https://climatedata.imf.org/pages/access-data) 
 
+
+2. Review variables and frequencies at [Aux] Variables description File [Doc Link](https://docs.google.com/spreadsheets/d/1Wi-eEsxhlAh1JGq6Y8fvvN3mqcajraz1aXOsq9fTLU8/edit?usp=sharing)
