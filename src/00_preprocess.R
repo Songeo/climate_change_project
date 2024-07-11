@@ -102,7 +102,7 @@ data_panel <-
   left_join(taxes_filtered,
             by = join_by(iso3, country, year))
 
-data_panel |> write_csv("data/processed/outcome_treatment_by_country.csv")
+data_panel |> write_csv("data/processed/panel_data.csv")
 
 
 # EDA ----

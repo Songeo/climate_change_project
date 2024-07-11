@@ -19,7 +19,7 @@ The directory structure for this project is as follows:
 │   ├── raw
 │   ├── processed
 ├── src
-│   ├── 00_eda.R
+│   ├── 00_preprocess.R
 ├── results
 │   ├── figures
 │   ├── tables
@@ -38,7 +38,7 @@ The directory structure for this project is as follows:
   - `processed`: Cleaned and processed data ready for analysis.
 
 - **src**: R scripts for the project.
-  - `00_eda.R`: Script for exploratory data analysis.
+  - `00_preprocess.R`: Script with preprocessing of data. Create data/processed/panel_data.csv
 
 - **results**: Contains results of the analysis.
   - `figures`: Graphs and plots generated from the analysis.
