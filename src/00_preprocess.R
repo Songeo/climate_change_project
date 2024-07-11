@@ -113,7 +113,7 @@ data_panel |>
                values_to = "value") |> 
   mutate(nas = (!is.na(value))) |> 
   ggplot(aes(x = year, y = iso3, fill = nas) ) + 
-  geom_tile() + 
+  geom_tile(color = "white") + 
   facet_wrap(~gas_type, nrow = 1) + 
   theme(axis.text.y = element_text(size = 4),
         axis.text.x = element_text(angle = 90))
@@ -127,7 +127,7 @@ data_panel |>
                values_to = "value") |> 
   mutate(nas = (!is.na(value))) |> 
   ggplot(aes(x = year, y = iso3, fill = nas) ) + 
-  geom_tile(color = "gray") + 
+  geom_tile(color = "white") + 
   facet_wrap(~tax_type, nrow = 1) + 
   theme(axis.text.y = element_text(size = 4), 
         axis.text.x = element_text(angle = 90))
