@@ -18,7 +18,6 @@ The directory structure for this project is as follows:
 ├── data
 │   ├── raw
 │   ├── processed
-│   ├── external
 ├── src
 │   ├── 00_eda.R
 ├── results
