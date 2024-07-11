@@ -27,7 +27,6 @@ The directory structure for this project is as follows:
 │   ├── figures
 │   ├── draft.md
 │   ├── final_report.md
-├── requirements.txt
 ├── setup.R
 ├── LICENSE
 ```
@@ -37,12 +36,9 @@ The directory structure for this project is as follows:
 - **data**: Contains all datasets used in the analysis.
   - `raw`: Raw data as obtained from the sources.
   - `processed`: Cleaned and processed data ready for analysis.
-  - `external`: Any external datasets or supplementary data.
 
 - **src**: R scripts for the project.
-  - `data_preprocessing.R`: Script for cleaning and preparing data.
-  - `analysis.R`: Script for performing data analysis.
-  - `models.R`: Script for developing and evaluating models.
+  - `00_eda.R`: Script for exploratory data analysis.
 
 - **results**: Contains results of the analysis.
   - `figures`: Graphs and plots generated from the analysis.
