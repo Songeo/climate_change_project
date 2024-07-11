@@ -2,15 +2,15 @@
 
 library(tidyverse)
 
-iso <- read_csv("data/list_country_iso_code.csv") |> 
+iso <- read_csv("data/raw/list_country_iso_code.csv") |> 
   select(country_name, ISO3)
 
-co2 <- read_csv("data/IMF-CID/3_National_Greenhouse_Gas_Emissions_Inventories_and_Implied_National_Mitigation_Nationally_Determined_Contributions_Targets.csv") |>
+co2 <- read_csv("data/raw/IMF-CID/3_National_Greenhouse_Gas_Emissions_Inventories_and_Implied_National_Mitigation_Nationally_Determined_Contributions_Targets.csv") |>
   pivot_longer(cols = c(`1995`:`2021`), names_to = "year",values_to = "value") |> 
   mutate_at("year", as.numeric) |> 
   filter(!is.na(value))
 
-taxes <- read_csv("data/IMF-CID/7_Environmental_Taxes.csv") |> 
+taxes <- read_csv("data/raw/IMF-CID/7_Environmental_Taxes.csv") |> 
   pivot_longer(cols = c(`1995`:`2021`), names_to = "year",values_to = "value") |> 
   mutate_at("year", as.numeric) |> 
   filter(!is.na(value))
