@@ -73,7 +73,6 @@ taxes_yr <-
 # review of data
 summary(taxes_yr)
 taxes_yr |> 
-  filter(n_yr < 27) |> 
   select(iso3, country) |> 
   unique()
 
@@ -106,10 +105,14 @@ data_panel <-
 data_panel |> write_csv("data/processed/panel_data.csv")
 
 
+
 # EDA ----
+n_distinct(data_panel$iso3)
+
+data |> select(iso3, year) |> distinct()
 
 # missing data
-data_panel |> 
+gg <- data_panel |> 
   select(iso3:year, carbon_dioxide:nitrous_oxide) |> 
   pivot_longer(carbon_dioxide:nitrous_oxide, 
                names_to = "gas_type", 
@@ -118,9 +121,13 @@ data_panel |>
   mutate(no_nas = (!is.na(value))) |> 
   ggplot(aes(x = year, y = iso3, fill = no_nas) ) + 
   geom_tile(color = "white") + 
-  facet_wrap(~gas_type, nrow = 1) + 
-  theme(axis.text.y = element_text(size = 4),
-        axis.text.x = element_text(angle = 90))
+  facet_wrap(~gas_type, ncol = 1) + 
+  theme(axis.text.x = element_text(size = 5, 
+                                   angle = 90), 
+        legend.position = "None") + 
+  coord_flip()
+gg
+ggsave(plot = gg, filename = "results/figures/nas_outcome.png", width = )
   
 data_panel |> 
   filter(year >= 1990) |> 
