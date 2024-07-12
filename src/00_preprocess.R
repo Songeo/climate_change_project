@@ -1,7 +1,8 @@
 
 # Libraries ----
 library(tidyverse)
-
+library(ggplot2)
+theme_set(theme_bw())
 
 # DATA ----
 iso <- 
@@ -106,11 +107,14 @@ data_panel |> write_csv("data/processed/panel_data.csv")
 
 
 # EDA ----
+
+# missing data
 data_panel |> 
   select(iso3:year, carbon_dioxide:nitrous_oxide) |> 
   pivot_longer(carbon_dioxide:nitrous_oxide, 
                names_to = "gas_type", 
                values_to = "value") |> 
+  filter(!is.na(value)) |> 
   mutate(no_nas = (!is.na(value))) |> 
   ggplot(aes(x = year, y = iso3, fill = no_nas) ) + 
   geom_tile(color = "white") + 
@@ -118,17 +122,57 @@ data_panel |>
   theme(axis.text.y = element_text(size = 4),
         axis.text.x = element_text(angle = 90))
   
-
 data_panel |> 
   filter(year >= 1990) |> 
   select(iso3:year, starts_with("tax")) |> 
   pivot_longer(starts_with("tax"), 
                names_to = "tax_type", 
-               values_to = "value") |> 
+               values_to = "value") |>
+  filter(!is.na(value)) |> 
   mutate(no_nas = !(is.na(value))) |> 
   ggplot(aes(x = year, y = iso3, fill = no_nas) ) + 
   geom_tile(color = "white") + 
   facet_wrap(~tax_type, nrow = 1) + 
   theme(axis.text.y = element_text(size = 4), 
         axis.text.x = element_text(angle = 90))
+
+# pollution metrics summary
+data_panel |> 
+  select(iso3:year, carbon_dioxide:nitrous_oxide) |> 
+  pivot_longer(carbon_dioxide:nitrous_oxide, 
+               names_to = "gas_type", 
+               values_to = "value") |> 
+  filter(!is.na(value)) |> 
+  group_by(gas_type) |> 
+  mutate(estand = (value - mean(value))/sd(value)) |> 
+  ggplot(aes(x = year, 
+             y = estand, 
+             group = iso3,
+             color = iso3) ) + 
+  geom_line() + 
+  facet_wrap(~gas_type) + 
+  theme(legend.position = "None") +
+  theme(axis.text.x = element_text(angle = 90))
+
+data_panel |> 
+  select(iso3:year, carbon_dioxide:nitrous_oxide) |> 
+  pivot_longer(carbon_dioxide:nitrous_oxide, 
+               names_to = "gas_type", 
+               values_to = "value") |> 
+  filter(!is.na(value)) |> 
+  group_by(iso3, gas_type) |> 
+  summarise(med = median(value)) |> 
+  group_by(gas_type) |> 
+  mutate(estand = (med - mean(med))/sd(med)) |> 
+  mutate(grp = ifelse(iso3 > "k", 1, 0)) |> 
+  ggplot(aes(x = gas_type, 
+             y = iso3,
+             fill = estand)) + 
+  geom_tile() + 
+  theme(axis.text.y = element_text(size = 5)) + 
+  scale_fill_viridis_c() + 
+  facet_wrap(~grp, scales = "free_y")
+
+
+# treatments
 
