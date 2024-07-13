@@ -1,5 +1,5 @@
 
-# Libraries ----
+# LIBS ----
 library(tidyverse)
 library(ggplot2)
 theme_set(theme_bw())
@@ -223,5 +223,37 @@ coef(lm(carbon_dioxide ~ tax_gdp_ecgte, data = data_panel ))
 lm(carbon_dioxide ~ tax_gdp_ecgten, data = data_panel )
 lm(carbon_dioxide ~ tax_gdp_ecgte, data = data_panel )
 
+
+
+
+# FINAL ----
+
+data_panel_final <- 
+  data_panel |> 
+  mutate(treatment = ifelse( is.na(tax_currency_ecgtep), 0, 1), 
+         outcome = carbon_dioxide) |> 
+  select( iso3, year, outcome, treatment )
+  
+data_panel_final |> 
+  group_by(iso3, treatment) |> 
+  mutate(treatment = cumsum(treatment))
+
+# last check
+data_panel_final |> 
+  group_by(treatment) |> 
+  summarise(max_tmt = max(treatment),
+            min_tmt = min(treatment)) 
+
+data_panel_final |> 
+  group_by(iso3) |> 
+  summarise(n_yrs = n_distinct(year)) |> 
+  filter(n_yrs != 53)
+
+data_panel_final |> 
+  head()
+  
+
+data_panel_final |> 
+  write_csv("data/processed/panel_data_final.csv")
 
 
