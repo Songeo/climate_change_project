@@ -171,7 +171,7 @@ data_panel |> write_csv("data/processed/panel_data.csv")
 data_panel <- read_csv("data/processed/panel_data.csv")
 
 
-# FINAL ----
+# TRANSFORMATIONS ----
 
 data_panel_final$iso3 |> n_distinct()
 
@@ -187,7 +187,51 @@ data_panel_final |>
   group_by(iso3, treatment) |> 
   mutate(treatment = cumsum(treatment))
 
+data_panel_final |> 
+  group_by(iso3, treatment) |> 
+  summarise(n_yrs = n_distinct(year)) |> 
+  filter(n_yrs != 22) |> 
+  pivot_wider(names_from = treatment, values_from = n_yrs) |> 
+  print(n = Inf)
+
+
+# MISSING VALUES ---
+
+nas_tab <- 
+  data_panel_final |> 
+  pivot_longer(cols = population:renewable_pct) |> 
+  filter(is.na(value)) |> 
+  group_by(iso3, name) |> 
+  count() |> 
+  pivot_wider(names_from = name, values_from = n) |> 
+  mutate(avg_total = mean(c(gdp_industry, 
+                        gdp_capita, 
+                        population, 
+                        urban_pct, 
+                        renewable_pct), 
+                      na.rm = T))
+
+
+nas_tab |> 
+  filter(avg_total < 22) |> 
+  select(iso3, avg_total)
+
+nas_tab |> 
+  filter(avg_total >= 22) |> 
+  select(iso3, avg_total)
+
+data_panel_final <- 
+  data_panel_final |> 
+  anti_join(nas_tab |> 
+              filter(avg_total >= 22) |> 
+              select(iso3), 
+            by = join_by(iso3))
+
+
 # last check
+data_panel_final$iso3 |> n_distinct()
+data_panel_final |> summary()
+
 data_panel_final |> 
   group_by(treatment) |> 
   summarise(max_tmt = max(treatment),
@@ -199,11 +243,15 @@ data_panel_final |>
   filter(n_yrs != 22)
 
 data_panel_final |> 
-  head()
-  
+  group_by(iso3, treatment) |> 
+  summarise(n_yrs = n_distinct(year)) |> 
+  filter(n_yrs != 22) |> 
+  pivot_wider(names_from = treatment, values_from = n_yrs) |> 
+  print(n = Inf)
 
+
+# WRITE FINAL DATA ----
 data_panel_final |> 
   write_csv("data/processed/panel_data_final.csv")
 data_panel_final <- read_csv("data/processed/panel_data_final.csv")
-
 
