@@ -1,5 +1,10 @@
 
 
+# LIBS ----
+library(tidyverse)
+library(ggplot2)
+theme_set(theme_bw())
+
 
 
 
@@ -119,4 +124,6 @@ sapply(data_panel |> ungroup() |> select(starts_with("tax_gdp")) |> colnames(),
 coef(lm(carbon_dioxide ~ tax_gdp_ecgte, data = data_panel ))
 lm(carbon_dioxide ~ tax_gdp_ecgten, data = data_panel )
 lm(carbon_dioxide ~ tax_gdp_ecgte, data = data_panel )
+
+
 
