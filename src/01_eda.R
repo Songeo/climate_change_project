@@ -5,6 +5,39 @@ library(tidyverse)
 library(ggplot2)
 theme_set(theme_bw())
 
+# DATA ----
+
+data_panel <- read_csv("data/processed/panel_data_final.csv")
+data_panel |> head()
+
+(data_panel |> nrow()) - (data_panel |> na.omit() |> nrow())
+
+data_panel |> summary()
+
+data_panel |> 
+  pivot_longer(cols = population:renewable_pct) |> 
+  filter(is.na(value)) |> 
+  group_by(iso3, name) |> 
+  count() |> 
+  pivot_wider(names_from = name, values_from = n) |> 
+  print(n = Inf)
+
+data_panel |> 
+  filter(is.na(population)) |> 
+  group_by(iso3, treatment) |> 
+  count()
+
+data_panel |> 
+  filter(is.na(gdp_capita)) |> 
+  group_by(iso3, treatment) |> 
+  count()
+
+data_panel |> 
+  filter(is.na(gdp_industry)) |> 
+  group_by(iso3, treatment) |> 
+  count() |> 
+  filter(n >= 22) |> 
+  print(n = Inf)
 
 
 
