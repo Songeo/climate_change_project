@@ -28,7 +28,6 @@ taxes <-
   inner_join(select(iso, iso3), 
              by = join_by(iso3))
   
-
 population <-  
   read_csv("data/raw/world_bank/population.csv") |> 
   rename_all(~ gsub(" ", "_", tolower(.))) |> 
@@ -168,17 +167,15 @@ data_panel <-
             by = join_by(iso3, year)) |> 
   filter(year >= 2000 & year <= 2021)
 
+# write table
 data_panel
 data_panel |> write_csv("data/processed/panel_data.csv")
-
 data_panel <- read_csv("data/processed/panel_data.csv")
 
 
+
 # TRANSFORMATIONS ----
-
-data_panel_final$iso3 |> n_distinct()
-
-data_panel_final <- 
+data_panel_transformed <- 
   data_panel |> 
   mutate(treatment = ifelse( is.na(tax_gdp_ecgtep), 0, 1), 
          outcome = carbon_dioxide,
@@ -194,76 +191,167 @@ data_panel_final <-
           urban_pct, 
           renewable_pct)
 
-data_panel_final |> 
+data_panel_transformed$iso3 |> n_distinct()
+
+data_panel_transformed |> 
   group_by(iso3, treatment) |> 
   summarise(n_yrs = n_distinct(year)) |> 
   filter(n_yrs != 22) |> 
   pivot_wider(names_from = treatment, values_from = n_yrs) |> 
   print(n = Inf)
 
+# write table
+data_panel_transformed
+data_panel_transformed |> write_csv("data/processed/panel_transformed_data.csv")
+data_panel_transformed <- read_csv("data/processed/panel_transformed_data.csv")
+
 
 # MISSING VALUES ---
 
+# nas per covariate
 nas_tab <- 
-  data_panel_final |> 
+  data_panel_transformed |> 
   pivot_longer(cols = population:renewable_pct) |> 
   filter(is.na(value)) |> 
   group_by(iso3, name) |> 
   count() |> 
-  pivot_wider(names_from = name, values_from = n) |> 
-  mutate(avg_total = mean(c(gdp_industry, 
+  pivot_wider(names_from = name, 
+              values_from = n) |> 
+  mutate(max_total = max(c(gdp_industry, 
                         gdp_capita, 
                         population, 
                         urban_pct, 
                         renewable_pct), 
                       na.rm = T))
 
+nas_tab |> 
+  filter(max_total < 22) |> 
+  nrow()
 
 nas_tab |> 
-  filter(avg_total < 22) |> 
-  select(iso3, avg_total)
+  filter(max_total >= 22) |> 
+  nrow()
 
-nas_tab |> 
-  filter(avg_total >= 22) |> 
-  select(iso3, avg_total)
-
-data_panel_final <- 
-  data_panel_final |> 
+# filtering missing values in all years in at least one variable
+data_panel_filtered <- 
+  data_panel_transformed |> 
   anti_join(nas_tab |> 
-              filter(avg_total >= 22) |> 
+              filter(max_total >= 22) |> 
               select(iso3), 
             by = join_by(iso3))
 
-
 # last check
-data_panel_final$iso3 |> n_distinct()
-data_panel_final |> summary()
+data_panel_filtered$iso3 |> n_distinct()
+data_panel_filtered |> summary()
 
-data_panel_final |> 
+data_panel_filtered |> 
   group_by(treatment) |> 
   summarise(max_tmt = max(treatment),
             min_tmt = min(treatment)) 
 
-data_panel_final |> 
+data_panel_filtered |> 
   group_by(iso3) |> 
   summarise(n_yrs = n_distinct(year)) |> 
   filter(n_yrs != 22)
 
-data_panel_final |> 
+data_panel_filtered |> 
   group_by(iso3, treatment) |> 
   summarise(n_yrs = n_distinct(year)) |> 
   filter(n_yrs != 22) |> 
   pivot_wider(names_from = treatment, values_from = n_yrs) |> 
   print(n = Inf)
 
+# write table
+data_panel_filtered
+data_panel_filtered |> write_csv("data/processed/panel_filtered_data.csv")
+data_panel_filtered <- read_csv("data/processed/panel_filtered_data.csv")
+
+
 
 # IMPUTATION ----
 
 
+# faltantes ----
+tab <- 
+  data_panel_filtered |> 
+  pivot_longer(cols = population:renewable_pct) |> 
+  mutate(nas = is.na(value)) |> 
+  group_by(iso3, name) |> 
+  reframe(sum_nas = sum(nas)) 
+
+gg <- 
+  ggplot(tab, 
+         aes(x = iso3, y = name, fill = sum_nas)
+  ) +
+  geom_tile(color = "white") + 
+  scale_fill_viridis_c() + 
+  theme(axis.text.x = element_text(size = 5, 
+                                   angle = 90), 
+        legend.position = 'bottom') 
+gg
+ggsave(plot = gg, 
+       filename = "results/figures/nas_outcome.png", 
+       width = 9, 
+       height = 5)
+
+
+# pre treatment 
+covars_long <-
+  data_panel_final %>%
+  pivot_longer(cols = population:renewable_pct, 
+               names_to = "variable",
+               values_to = "value") |> 
+  group_by(iso3, variable) |> 
+  mutate(sum_nas = sum(is.na(value)))
+
+covars_long  |> 
+  mutate(missing_values = sum_nas > 0) |> 
+  ggplot(aes(x = year,
+             y = value, 
+             group = iso3, 
+             color = iso3)) +
+  geom_line(size = 1, alpha = .5) +
+  facet_grid(variable ~ missing_values, 
+             scales = "free") +
+  labs(title = "Trends of Various Variables by Year and ISO3",
+       x = "Year",
+       y = "Value") +
+  theme(axis.text.x = element_text(size = 7),
+        strip.text = element_text(size = 10), 
+        legend.position = "None")
+
+sapply(unique(covars_long$variable), 
+       function(var){
+         gg <- covars_long  |> 
+           filter(variable == var) |> 
+           mutate(iso_initial = iso3 > "kg") |> 
+           ggplot(aes(x = year,
+                      y = iso3, 
+                      fill = log(value + 100) )) +
+           geom_tile() + 
+           facet_wrap(~iso_initial, scales = "free") + 
+           scale_fill_gradient(low = "#9eb1cf", 
+                               high = "#5083a0", 
+                               na.value = "white") + 
+           labs(title = glue::glue("Missing values in variable {var}"),
+                x = "Country",
+                y = "Year") +
+           theme(axis.text.x = element_text(size = 7),
+                 strip.text = element_blank(), 
+                 legend.position = "Bottom")
+         
+         var_lower <- str_squish(tolower(var))
+         ggsave(plot = gg, 
+                filename = glue::glue("results/figures/covariate_year_{var_lower}.png"), 
+                width = 16, 
+                height = 12)
+         
+       })
 
 
 # WRITE FINAL DATA ----
-data_panel_final |> 
-  write_csv("data/processed/panel_data_final.csv")
+
+data_panel_final <- data_panel_filtered
+data_panel_final |> write_csv("data/processed/panel_data_final.csv")
 data_panel_final <- read_csv("data/processed/panel_data_final.csv")
 
