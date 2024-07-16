@@ -382,6 +382,10 @@ gg <-
   ggplot(aes( x= year,
               y = original, 
               group = name)) + 
+  geom_vline(aes(xintercept = ifelse(treatment == 1, year, NA)), 
+             alpha = .7, 
+             color = "gray40",
+             linetype = 2)  + 
   geom_line(aes(y = imputation), color = "red", size = 2, alpha = .7) + 
   geom_line(color = "blue") + 
   facet_wrap(~name + iso3, scales = "free")
