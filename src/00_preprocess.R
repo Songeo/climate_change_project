@@ -2,9 +2,11 @@
 # LIBS ----
 library(tidyverse)
 library(ggplot2)
+library(imputeTS)
+
 theme_set(theme_bw())
 
-# DATA ----
+# 1. DATA ----
 iso <- 
   read_csv("data/raw/list_country_iso_code.csv") |> 
   rename_all(~ gsub(" ", "_", tolower(.))) |> 
@@ -80,7 +82,7 @@ renewal <-
              by = join_by(iso3))
 
 
-# Emmisions ----
+# Emmisions
 
 # unique emissions per year including landscape 
 # Total GHG emissions including land-use, land-use change and forestry	
@@ -112,7 +114,7 @@ emmisions |>
             max_yr = max(year)) |> 
   write.table("results/tables/pre_emissions_iso.txt", sep = ";", row.names = F)
 
-# Taxes ----
+# Taxes
 
 # unique emissions per year including landscape 
 taxes_yr <- 
@@ -142,7 +144,7 @@ taxes |>
   write.table("results/tables/pre_taxes_iso.txt", sep = ";", row.names = F)
 
 
-# UNION ----
+# 2. UNION ----
 emmisions_filtered <- 
   emmisions_yr |> 
   filter(n_yr == 53) |> 
@@ -174,7 +176,7 @@ data_panel <- read_csv("data/processed/panel_data.csv")
 
 
 
-# TRANSFORMATIONS ----
+# 3. TRANSFORMATIONS ----
 data_panel_transformed <- 
   data_panel |> 
   mutate(treatment = ifelse( is.na(tax_gdp_ecgtep), 0, 1), 
@@ -268,10 +270,10 @@ data_panel_filtered <- read_csv("data/processed/panel_filtered_data.csv")
 
 
 
-# IMPUTATION ----
+# 4. IMPUTATION ----
 
 
-# faltantes ----
+# missing values visualization
 tab <- 
   data_panel_filtered |> 
   pivot_longer(cols = population:renewable_pct) |> 
@@ -295,9 +297,9 @@ ggsave(plot = gg,
        height = 5)
 
 
-# pre treatment 
+# pre imputation evaluation
 covars_long <-
-  data_panel_final %>%
+  data_panel_filtered |> 
   pivot_longer(cols = population:renewable_pct, 
                names_to = "variable",
                values_to = "value") |> 
@@ -320,38 +322,88 @@ covars_long  |>
         strip.text = element_text(size = 10), 
         legend.position = "None")
 
-sapply(unique(covars_long$variable), 
-       function(var){
-         gg <- covars_long  |> 
-           filter(variable == var) |> 
-           mutate(iso_initial = iso3 > "kg") |> 
-           ggplot(aes(x = year,
-                      y = iso3, 
-                      fill = log(value + 100) )) +
-           geom_tile() + 
-           facet_wrap(~iso_initial, scales = "free") + 
-           scale_fill_gradient(low = "#9eb1cf", 
-                               high = "#5083a0", 
-                               na.value = "white") + 
-           labs(title = glue::glue("Missing values in variable {var}"),
-                x = "Country",
-                y = "Year") +
-           theme(axis.text.x = element_text(size = 7),
-                 strip.text = element_blank(), 
-                 legend.position = "Bottom")
-         
-         var_lower <- str_squish(tolower(var))
-         ggsave(plot = gg, 
-                filename = glue::glue("results/figures/covariate_year_{var_lower}.png"), 
-                width = 16, 
-                height = 12)
-         
-       })
+sapply(unique(covars_long$variable), function(var){
+  gg <- 
+   covars_long  |> 
+   filter(variable == var) |> 
+   mutate(iso_initial = iso3 > "kg") |> 
+   ggplot(aes(x = year,
+              y = iso3, 
+              fill = log(value + 100) )) +
+   geom_tile() + 
+   facet_wrap(~iso_initial, scales = "free") + 
+   scale_fill_gradient(low = "#9eb1cf", 
+                       high = "#5083a0", 
+                       na.value = "white") + 
+   labs(title = glue::glue("Missing values in variable {var}"),
+        x = "Country",
+        y = "Year") +
+   theme(axis.text.x = element_text(size = 7),
+         strip.text = element_blank(), 
+         legend.position = "Bottom")
+ 
+ var_lower <- str_squish(tolower(var))
+ ggsave(plot = gg, 
+        filename = glue::glue("results/figures/covariate_pre_{var_lower}.png"), 
+        width = 16, 
+        height = 12)
+})
 
 
-# WRITE FINAL DATA ----
 
-data_panel_final <- data_panel_filtered
+# imputation
+impute_ts <- function(group) {
+  group <- group  |> 
+    arrange(year) |> 
+    mutate(across(population:renewable_pct,
+                  ~ na.interpolation(.)))
+  return(group)
+}
+
+data_panel_imputed <- 
+  data_panel_filtered |> 
+  group_by(iso3) |> 
+  group_modify(~ impute_ts(.x)) |> 
+  ungroup()
+
+# post imputation evaluation
+comparison <- 
+  data_panel_imputed |> 
+  pivot_longer(cols = population:renewable_pct, values_to = "imputation") |> 
+  left_join(data_panel_filtered |> 
+              pivot_longer(cols = population:renewable_pct, values_to = "original"),
+            by = join_by(iso3, year, outcome, treatment, name)) |> 
+  group_by(iso3, name) |> 
+  mutate(nas_sum = sum(is.na(original))) |> 
+  filter(nas_sum > 0)
+
+gg <- 
+  comparison |> 
+  ggplot(aes( x= year,
+              y = original, 
+              group = name)) + 
+  geom_line(aes(y = imputation), color = "red", size = 2, alpha = .7) + 
+  geom_line(color = "blue") + 
+  facet_wrap(~name + iso3, scales = "free")
+
+gg
+ggsave(plot = gg, 
+       filename = "results/figures/imputation_comparison.png", 
+       width = 14, 
+       height = 10)
+
+
+# no missing values in the data set
+data_panel_imputed |> 
+  is.na() |> 
+  sum()
+
+data_panel_imputed$iso3 |> n_distinct()
+
+
+# FINAL DATA ----
+
+data_panel_final <- data_panel_imputed
 data_panel_final |> write_csv("data/processed/panel_data_final.csv")
 data_panel_final <- read_csv("data/processed/panel_data_final.csv")
 
