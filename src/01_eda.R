@@ -19,34 +19,6 @@ data_panel_final |> head()
 data_panel_final |> summary()
 
 
-
-
-
-# faltantes ----
-tab <- 
-  data_panel_final |> 
-  pivot_longer(cols = population:renewable_pct) |> 
-  mutate(nas = is.na(value)) |> 
-  group_by(iso3, name) |> 
-  reframe(sum_nas = sum(nas)) 
-
-gg <- 
-  ggplot(tab, 
-       aes(x = iso3, y = name, fill = sum_nas)
-       ) +
-  geom_tile(color = "white") + 
-  scale_fill_viridis_c() + 
-  theme(axis.text.x = element_text(size = 5, 
-                                   angle = 90), 
-        legend.position = 'bottom') 
-
-gg
-ggsave(plot = gg, 
-       filename = "results/figures/nas_outcome.png", 
-       width = 9, 
-       height = 5)
-
-
 # treatment ----
 data_panel_final |> 
   group_by(treatment) |> 
@@ -72,7 +44,6 @@ gg <-
        Fill = "Treatment") 
 
 gg
-
 ggsave(plot = gg, 
        filename = "results/figures/tmt_year.png", 
        width = 15, 
@@ -80,8 +51,6 @@ ggsave(plot = gg,
 
 
 # outcome ----
-
-# treatment ----
 data_panel_final |> 
   group_by(is.na(outcome)) |> 
   count() |> 
@@ -105,7 +74,6 @@ gg <-
        y = "Country") 
 
 gg
-
 ggsave(plot = gg, 
        filename = "results/figures/outcome_year.png", 
        width = 16, 
@@ -114,58 +82,8 @@ ggsave(plot = gg,
 
 
 
-# covariates
-covars_long <-
-  data_panel_final %>%
-  pivot_longer(cols = population:renewable_pct, 
-               names_to = "variable",
-               values_to = "value") |> 
-  group_by(iso3, variable) |> 
-  mutate(sum_nas = sum(is.na(value)))
+# covariates ----
 
-covars_long  |> 
-  mutate(missing_values = sum_nas > 0) |> 
-  ggplot(aes(x = year,
-             y = value, 
-             group = iso3, 
-             color = iso3)) +
-  geom_line(size = 1, alpha = .5) +
-  facet_grid(variable ~ missing_values, 
-             scales = "free") +
-  labs(title = "Trends of Various Variables by Year and ISO3",
-       x = "Year",
-       y = "Value") +
-  theme(axis.text.x = element_text(size = 7),
-        strip.text = element_text(size = 10), 
-        legend.position = "None")
-
-sapply(unique(covars_long$variable), 
-       function(var){
-  gg <- covars_long  |> 
-    filter(variable == var) |> 
-    mutate(iso_initial = iso3 > "kg") |> 
-    ggplot(aes(x = year,
-               y = iso3, 
-               fill = log(value + 100) )) +
-    geom_tile() + 
-    facet_wrap(~iso_initial, scales = "free") + 
-    scale_fill_gradient(low = "#9eb1cf", 
-                        high = "#5083a0", 
-                        na.value = "white") + 
-    labs(title = glue::glue("Missing values in variable {var}"),
-         x = "Country",
-         y = "Year") +
-    theme(axis.text.x = element_text(size = 7),
-          strip.text = element_blank(), 
-          legend.position = "Bottom")
-  
-  var_lower <- str_squish(tolower(var))
-  ggsave(plot = gg, 
-         filename = glue::glue("results/figures/covariate_year_{var_lower}.png"), 
-         width = 16, 
-         height = 12)
-  
-})
 
 
 
