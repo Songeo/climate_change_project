@@ -84,6 +84,9 @@ renewal <-
 # Emmisions ----
 
 # unique emissions per year including landscape 
+# Total GHG emissions including land-use, land-use change and forestry	
+# Million metric tons of CO2 equivalent
+
 emmisions_yr <- 
   emmisions |> 
   filter(cts_code %in% c("ECNGDI")) |> 
@@ -181,11 +184,15 @@ data_panel_final <-
          outcome = carbon_dioxide,
          renewable_pct = total_renewable/total_energy, 
          urban_pct = urban_pop/population) |> 
-  select( iso3, year, outcome, treatment, population, gdp_capita, gdp_industry, urban_pct, renewable_pct)
-  
-data_panel_final |> 
-  group_by(iso3, treatment) |> 
-  mutate(treatment = cumsum(treatment))
+  select( iso3, 
+          year, 
+          outcome, 
+          treatment, 
+          population, 
+          gdp_capita, 
+          gdp_industry, 
+          urban_pct, 
+          renewable_pct)
 
 data_panel_final |> 
   group_by(iso3, treatment) |> 
@@ -248,6 +255,11 @@ data_panel_final |>
   filter(n_yrs != 22) |> 
   pivot_wider(names_from = treatment, values_from = n_yrs) |> 
   print(n = Inf)
+
+
+# IMPUTATION ----
+
+
 
 
 # WRITE FINAL DATA ----
