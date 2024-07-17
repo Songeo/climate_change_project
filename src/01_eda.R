@@ -83,3 +83,5 @@ ggsave(plot = gg,
 
 
 
+# parallel trends  ----
+data_panel_final
