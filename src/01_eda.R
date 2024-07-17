@@ -35,7 +35,7 @@ gg <-
   ggplot(aes(x = year, 
              y = iso3, 
              fill = treatment)) + 
-  geom_tile(color = "white") + 
+  geom_tile(color = "white", size = .5) + 
   scale_fill_manual(values = c("gray90", "#6987bb")) + 
   facet_wrap(~iso_initial, scales = "free_y") + 
   theme(axis.text.x = element_text(size = 7),
@@ -65,8 +65,9 @@ gg <-
   mutate(iso_initial = iso3 > "kg") |> 
   ggplot(aes(x = year, 
              y = iso3, 
-             fill = log(outcome + 100)) ) + 
-  geom_tile(color = "white") + 
+             fill = outcome) ) + 
+  geom_tile(color = "white",
+            size = .1) + 
   scale_fill_viridis_c() + 
   facet_wrap(~iso_initial, scales = "free_y") + 
   theme(axis.text.x = element_text(size = 7),
@@ -83,5 +84,6 @@ ggsave(plot = gg,
 
 
 
-# parallel trends  ----
+#   ----
 data_panel_final
+
