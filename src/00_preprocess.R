@@ -177,12 +177,16 @@ data_panel <- read_csv("data/processed/panel_data.csv")
 
 
 # 3. TRANSFORMATIONS ----
-data_panel_transformed <- 
+sdata_panel_transformed <- 
   data_panel |> 
+  left_join(data_panel |> 
+              filter(year == min(data_panel$year)) |> 
+              select(iso3, idx00= carbon_dioxide),
+            by = join_by(iso3)) |> 
   mutate(treatment = ifelse( is.na(tax_gdp_ecgtep), 0, 1), 
-         outcome = carbon_dioxide,
-         renewable_pct = total_renewable/total_energy, 
-         urban_pct = urban_pop/population) |> 
+       outcome = carbon_dioxide/idx00,
+       renewable_pct = total_renewable/total_energy, 
+       urban_pct = urban_pop/population) |> 
   select( iso3, 
           year, 
           outcome, 
@@ -191,7 +195,7 @@ data_panel_transformed <-
           gdp_capita, 
           gdp_industry, 
           urban_pct, 
-          renewable_pct)
+          renewable_pct) 
 
 data_panel_transformed$iso3 |> n_distinct()
 
