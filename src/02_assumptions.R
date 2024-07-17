@@ -1,96 +1,160 @@
 
 
-# LIBS ----
+# 0. LIBS ----
 library(tidyverse)
 library(ggplot2)
 theme_set(theme_bw())
 
-library(fect)
 library(panelView)
 library(patchwork)
-
-# library(lfe)
-
-
-# DATA ----
-data_panel_final <- read_csv("data/processed/panel_data_final.csv") |> 
-  mutate(l_outcome = log(outcome + 100))
+library(did)
+library(fixest)
+library(fect)
 
 
+
+# 1. DATA ----
+data_panel_final <- 
+  read_csv("data/processed/panel_data_final.csv") |> 
+  mutate(iso3num = as.numeric(factor(iso3)) ) |> 
+  group_by(iso3) |> 
+  mutate(first_treat = ifelse(any(treatment == 1), min(year[treatment == 1]), 0),
+         time_to_treatment = ifelse(any(treatment == 1), min(year[treatment == 1]), 3000) - year) |> 
+  mutate_at("treatments", factor) |> 
+  filter(iso3 != "GRL")
+
+data_panel_final |> filter(iso3 == "MEX") |> print(n = 45)
+data_panel_final |> filter(iso3 == "ABW") |> print(n = 45)
+data_panel_final |> summary()
 data_panel_final$outcome |> summary()
 
 
-panelview(l_outcome ~ treatment, 
+# 2. VIS ----
+gg <- panelview(outcome ~ treatment, 
           data = data_panel_final,
           index = c("iso3","year"), 
           axis.lab = "time", xlab = "Time", ylab = "Unit", 
           background = "white", 
           main = "Treatment Status")
+gg
+ggsave(plot = gg, 
+       filename = "results/figures/panelview_treatment_wgrl.png", 
+       width = 7, 
+       height = 6)
 
-panelview(l_outcome ~ treatment, 
+gg <- panelview(outcome ~ treatment, 
           data = data_panel_final,
           index = c("iso3","year"),
           axis.lab = "time", xlab = "Time", ylab = "Unit", 
           theme.bw = TRUE, type = "outcome", main = "Outcome")
+gg
+ggsave(plot = gg, 
+       filename = "results/figures/panelview_outcome_wgrl.png", 
+       width = 8, 
+       height = 5)
 
 
-out.fect <- fect(outcome ~ treatment + population + gdp_capita,
+# 3. MODEL ----
+model_formula <- outcome ~ treatment + 
+  population + gdp_capita + 
+  urban_pct+  renewable_pct
+print(model_formula)
+
+# 4. ATT ----
+
+# event study design ----
+event_model <- feols(outcome ~ i(time_to_treatment, treatment, ref = -1) | iso3 + year, 
+                     data = data_panel_final)
+summary(event_model)
+
+
+# staggered adoption DiD ----
+att_gt <- att_gt(yname = "outcome",
+                 tname = "year",
+                 idname = "iso3num",
+                 gname = "first_treat",
                  data = data_panel_final,
-                 index = c("iso3","year"),
-                 method = "fe", force = "two-way")
+                 control_group = "nevertreated")
 
-plot(out.fect, type = "gap")
+#' Dropped 88 units that were already treated in the first period.
+#' Check groups: 2005,2008,2010,2017.
+#' Not returning pre-test Wald statistic due to singular covariance matrix
 
-plot(out.fect, 
+summary(att_gt)
+ggdid(att_gt)
+
+
+
+# individual-level fixed effects and treatment interactions ----
+interaction_model <- feols(outcome ~ treatment | iso3 + year, data = data_panel_final)
+summary(interaction_model)
+
+# factor-augmented fixed effects model ----
+model_fe <- fect(model_formula,
+                 data = data_panel_final,
+                 index = c("iso3", "year"),
+                 method = "fe", 
+                 force = "two-way",
+                 CV = T, 
+                 r = c(0, 5), 
+                 se = T, 
+                 nboots = 200, 
+                 parallel = T, 
+                 loo = T)
+
+model_fe
+
+plot(model_fe, 
      main = "Estimated ATT (FEct)", 
      ylab = "Effect of D on Y", 
-     cex.main = 0.8, cex.lab = 0.8, cex.axis = 0.8)
+     cex.main = 0.8, 
+     cex.lab = 0.8, 
+     cex.axis = 0.8)
 
-out.fect <- fect(outcome ~ treatment + population + gdp_capita,
-                 data = data_panel_final,
-                 index = c("iso3","year"), 
-                 method = "fe",
-                 force = "two-way", 
-                 se = TRUE, parallel = TRUE, nboots = 200)
-# For identification purposes, units whose number of untreated periods <1 are dropped automatically.
+# interactive fixed effects model ----
+model_ife <- fect(model_formula,
+                  data = data_panel_final,
+                  index = c("iso3", "year"),
+                  method = "ife", 
+                  force = "two-way",
+                  CV = T, 
+                  r = c(0, 5), 
+                  se = T, 
+                  nboots = 200, 
+                  parallel = T, 
+                  loo = F)
 
-plot(out.fect, 
-     main = "Estimated ATT (FEct)", 
+model_ife
+
+plot(model_ife, 
+     main = "Estimated ATT (IFEct)", 
      ylab = "Effect of D on Y", 
-     cex.main = 0.8, cex.lab = 0.8, cex.axis = 0.8)
+     cex.main = 0.8, 
+     cex.lab = 0.8, 
+     cex.axis = 0.8)
 
-out.fect$est.att
-out.fect$est.avg
-out.fect$est.beta
 
-plot(out.fect, 
-     type = "equiv", 
-     cex.legend = 0.6,
-     main = "Testing Pre-Trend (FEct)", 
-     cex.text = 0.8)
 
-out.fect.loo <- fect(outcome ~ treatment + population + gdp_capita,
-                     data = data_panel_final,
-                     index = c("iso3","year"), 
-                     method = "fe", 
-                     force = "two-way", 
-                     se = TRUE, parallel = TRUE, nboots = 200, loo = TRUE)
-out.ife.loo <- fect(outcome ~ treatment + population + gdp_capita,
-                    data = data_panel_final,
-                    index = c("iso3","year"), 
-                    method = "ife", 
-                    force = "two-way", 
-                    se = TRUE, parallel = TRUE, nboots = 200, loo = TRUE)
-out.mc.loo <- fect(outcome ~ treatment + population + gdp_capita,
-                   data = data_panel_final,
-                   index = c("iso3","year"), 
-                   method = "mc", 
-                   force = "two-way", 
-                   se = TRUE, parallel = TRUE, nboots = 200, loo = TRUE)
+# matrix completion fixed effects model ----
+model_mcf <- fect(model_formula,
+                  data = data_panel_final,
+                  index = c("iso3", "year"),
+                  method = "mc", 
+                  force = "two-way",
+                  CV = T, 
+                  r = c(0, 5), 
+                  se = T, 
+                  nboots = 100, 
+                  parallel = T, 
+                  loo = F)
 
-plot(out.fect.loo, type = "equiv", loo = TRUE,
-     cex.legend = 0.6, main = "Testing Pre-Trend LOO (FEct)", cex.text = 0.8)
+model_mcf
 
-plot(out.ife.loo, type = "equiv",  loo = TRUE,
-     cex.legend = 0.6, main = "Testing Pre-Trend LOO (IFEct)", cex.text = 0.8)
+plot(model_mcf, 
+     main = "Estimated ATT (CFct)", 
+     ylab = "Effect of D on Y", 
+     cex.main = 0.8, 
+     cex.lab = 0.8, 
+     cex.axis = 0.8)
+
 
