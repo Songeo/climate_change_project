@@ -1,5 +1,5 @@
 
-# LIBS ----
+# 0. LIBS ----
 library(tidyverse)
 library(ggplot2)
 library(imputeTS)
@@ -177,16 +177,19 @@ data_panel <- read_csv("data/processed/panel_data.csv")
 
 
 # 3. TRANSFORMATIONS ----
-sdata_panel_transformed <- 
+data_panel_transformed <- 
   data_panel |> 
+  # union of min data in panel
   left_join(data_panel |> 
               filter(year == min(data_panel$year)) |> 
-              select(iso3, idx00= carbon_dioxide),
+              select(iso3, c0200 = carbon_dioxide),
             by = join_by(iso3)) |> 
+  # transformations
   mutate(treatment = ifelse( is.na(tax_gdp_ecgtep), 0, 1), 
-       outcome = carbon_dioxide/idx00,
+       outcome = carbon_dioxide/c0200,
        renewable_pct = total_renewable/total_energy, 
        urban_pct = urban_pop/population) |> 
+  # select variables
   select( iso3, 
           year, 
           outcome, 
@@ -198,6 +201,10 @@ sdata_panel_transformed <-
           renewable_pct) 
 
 data_panel_transformed$iso3 |> n_distinct()
+
+data_panel_transformed |> 
+  filter(outcome > 200 ) |> 
+  summary()
 
 data_panel_transformed |> 
   group_by(iso3, treatment) |> 
