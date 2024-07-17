@@ -1,0 +1,147 @@
+\documentclass{beamer}
+\usetheme{Montpellier}
+\DeclareOptionBeamer{compress}{\beamer@compresstrue}
+\ProcessOptionsBeamer
+
+\mode<presentation>
+
+\useoutertheme[footline=authortitle]{miniframes}
+
+\usecolortheme{dolphin}
+\usecolortheme{orchid}
+
+\definecolor{beamer@blendedblue}{rgb}{0.137,0.466,0.741}
+
+\setbeamercolor{structure}{fg=beamer@blendedblue}
+\setbeamercolor{titlelike}{parent=structure}
+\setbeamercolor{frametitle}{fg=black}
+\setbeamercolor{title}{fg=black}
+\setbeamercolor{item}{fg=black}
+
+\mode
+<all>
+\usepackage{appendixnumberbeamer}
+\usepackage{pifont}
+
+\setlength\fboxsep{-0.5pt}
+
+\beamertemplatenavigationsymbolsempty
+\usepackage{amsmath, amsthm, mathtools, amssymb, enumerate, physics, bm, bbm}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\foram}{~\forall~}
+\newcommand{\forat}{\forall~}
+\newcommand{\exist}{\exists~}
+\newcommand{\sts}{~|~}
+\newcommand{\stt}{~\text{such that}~}
+\newcommand{\proofline}[2]{{#1}~\big(\text{#2}\big)}
+\newcommand{\undersett}[2]{\underset{#1}{\text{#2}}~}
+\newcommand{\parti}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\partitwo}[2]{\frac{\partial^2 #1}{\partial #2^2}}
+\newcommand{\darti}[2]{\frac{d #1}{d #2}}
+\newcommand{\dartitwo}[2]{\frac{d^2 #1}{d #2^2}}
+\newcommand{\casesline}[2]{#1~\text{if}~#2}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand{\maxx}[2]{\max_{#1}#2}
+\newcommand{\argmaxx}[2]{\argmax_{#1}#2}
+\newcommand{\pars}[1]{\left(#1\right)}
+\newcommand{\brac}[1]{\left[#1\right]}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\bigp}[1]{\big(#1\big)}
+\newcommand{\bigb}[1]{\big[#1\big]}
+\newcommand{\bigs}[1]{\big\{#1\big\}}
+\newcommand{\Bigp}[1]{\Big(#1\Big)}
+\newcommand{\Bigb}[1]{\Big[#1\Big]}
+\newcommand{\Bigs}[1]{\Big\{#1\Big\}}
+\newcommand{\setof}[1]{\{#1\}}
+\newcommand{\sumone}[2]{\sum_{#1 = 1}^{#2}}
+\newcommand{\indic}{\mathbbm{1}}
+\frenchspacing
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{positioning}
+\usetikzlibrary{calc}
+\tikzset{%
+  >={Latex[width=2mm,length=2mm]},
+  % Specifications for style of nodes:
+            base/.style = {rectangle, rounded corners, draw=black,
+                           minimum width=2cm, minimum height=0.5cm,
+                           text centered, font=\sffamily},
+  PreMarket/.style = {base, fill=green!30},
+  Normal/.style = {base, fill=blue!30},
+  StrategyMethod/.style = {base, fill=red!30},
+}
+
+\title{The Impact of Environmental Taxation on CO2 Emissions}
+\author{Sonia Mendizábal and Wanchao Zhao}
+\date{Statistical Methods for Causal Inference}
+
+\begin{document}
+%\setbeamercovered{transparent}
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+  \insertshorttitle\hfill%
+  \insertframenumber\,/\,\inserttotalframenumber}
+%\addtobeamertemplate{navigation symbols}{}{ \hspace{1em}    \usebeamerfont{footline}%
+%    \insertframenumber / \inserttotalframenumber }
+
+\begin{frame}[noframenumbering]
+\maketitle
+\vspace{-10pt}
+\begin{figure}
+    \centering
+    \includegraphics[width=6cm]{figures/vu_logo.png}
+\end{figure}
+\end{frame}
+
+\section{Introduction}
+
+\begin{frame}{Objective}
+
+\end{frame}
+
+\begin{frame}{Data}
+
+\end{frame}
+
+
+\section{Design}
+
+\begin{frame}{Difference in Differences}
+
+\end{frame}
+
+
+\section{Theory}
+
+\begin{frame}{Methodologies}
+
+\end{frame}
+
+\section{Results}
+
+\begin{frame}{Methodology 1}
+
+\end{frame}
+
+
+\begin{frame}{Comparison}
+
+\end{frame}
+
+\section{Conclusions}
+
+\begin{frame}{Continuity Assumption: Math}
+
+\end{frame}
+
+
+
+\section{References}
+
+\begin{frame}{Continuity Assumption: Math}
+
+\end{frame}
+
+\end{document}
