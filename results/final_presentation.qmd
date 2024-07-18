@@ -41,17 +41,19 @@ Balanced panel data with staggered adoption of treatment with general pattern (s
 
 ## Data
 
+The climate data mainly used in this study is obtained from the Climate Change Indicators Dashboard, provided by the IMF. It aggregates metrics, including greenhouse gas emissions, mitigation, adaptation, weather, renewable energy and climate finance.
+
+We also accessed other general country information including the GDP per capita, population, urban population and industry level per GDP.
 
 ## Variables
 
-### Outcome
 
 ![](/figures/panelview_outcome_wgrl.png)
 
-### Treatment
+---
 
 ![](/figures/panelview_treatment_wgrl.png)
->>>>>>> a60b22605af1155df333b7f762d98749a27e488b
+---
 
 # Theory
 
