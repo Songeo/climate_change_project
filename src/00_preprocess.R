@@ -302,14 +302,13 @@ gg <-
   ) +
   geom_tile(color = "white") + 
   scale_fill_viridis_c() + 
-  theme(axis.text.x = element_text(size = 5, 
-                                   angle = 90), 
+  theme(axis.text.x = element_blank(), 
         legend.position = 'bottom') 
 gg
 ggsave(plot = gg, 
        filename = "results/figures/nas_outcome.png", 
-       width = 9, 
-       height = 5)
+       width = 10, 
+       height = 4.5)
 
 
 # pre imputation evaluation
@@ -371,7 +370,7 @@ impute_ts <- function(group) {
   group <- group  |> 
     arrange(year) |> 
     mutate(across(population:renewable_pct,
-                  ~ na.interpolation(.)))
+                  ~ na_interpolation(.)))
   return(group)
 }
 

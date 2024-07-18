@@ -84,6 +84,4 @@ ggsave(plot = gg,
 
 
 
-#   ----
-data_panel_final
 
