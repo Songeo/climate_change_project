@@ -20,7 +20,7 @@ data_panel_final <-
   group_by(iso3) |> 
   mutate(first_treat = ifelse(any(treatment == 1), min(year[treatment == 1]), 0),
          time_to_treatment = ifelse(any(treatment == 1), min(year[treatment == 1]), 3000) - year) |> 
-  mutate_at("treatment", factor) |> 
+  mutate_at("treatment", factor)# |> 
   filter(iso3 != "GRL")
 
 data_panel_final |> filter(iso3 == "MEX") |> print(n = 45)
