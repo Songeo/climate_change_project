@@ -79,13 +79,19 @@ model_fe <- fect(model_formula,
 
 model_fe
 
-plot(model_fe, 
+gg <- 
+  plot(model_fe, 
      main = "Estimated ATT (FEct)", 
      ylab = "Effect of D on Y", 
      bound = "both", 
      cex.main = 0.8, 
      cex.lab = 0.8, 
      cex.axis = 0.8)
+gg
+ggsave(plot = gg, 
+       filename = "results/figures/pta_plot_fe.png", 
+       width = 9, 
+       height = 6.5)
 
 # interactive fixed effects model ----
 model_ife <- fect(model_formula,
@@ -102,7 +108,8 @@ model_ife <- fect(model_formula,
 
 model_ife
 
-plot(model_ife, 
+gg <- 
+  plot(model_ife, 
      main = "Estimated ATT (IFEct)", 
      ylab = "Effect of D on Y", 
      type = "gap", 
@@ -110,7 +117,11 @@ plot(model_ife,
      cex.main = 0.8, 
      cex.lab = 0.8, 
      cex.axis = 0.8)
-
+gg
+ggsave(plot = gg, 
+       filename = "results/figures/pta_plot_ife.png", 
+       width = 9, 
+       height = 6.5)
 
 # matrix completion fixed effects model ----
 model_mcf <- fect(model_formula,
@@ -127,7 +138,8 @@ model_mcf <- fect(model_formula,
 
 model_mcf
 
-plot(model_mcf, 
+gg <- 
+  plot(model_mcf, 
      main = "Estimated ATT (MCct)", 
      ylab = "Effect of D on Y", 
      bound = "both", 
@@ -135,7 +147,11 @@ plot(model_mcf,
      cex.lab = 0.8, 
      cex.axis = 0.8)
 
-
+gg
+ggsave(plot = gg, 
+       filename = "results/figures/pta_plot_mc.png", 
+       width = 9, 
+       height = 6.5)
 
 # summary
 library(broom)
