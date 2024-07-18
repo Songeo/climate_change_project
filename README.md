@@ -42,6 +42,7 @@ The directory structure for this project is as follows:
 - **results**: Contains results of the analysis.
   - `figures`: Graphs and plots generated from the analysis.
   - `tables`: Tables summarizing the findings.
+  - `final_presentation.qmd`: Quarto presentation code
 
 ## Getting Started
 
