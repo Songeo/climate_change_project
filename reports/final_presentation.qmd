@@ -1,24 +1,37 @@
 ---
-title: "final_presentation"
-format: revealjs
+title: "The Impact of Environmental Taxation on CO2 Emissions"
+subtitle: "Statistical Methods for Causal Inference"
+author: "Sonia Mendizábal and Wanchao Zhao"
+date: "2024-07"
+format: 
+  revealjs:
+    css: styles.css
 editor: visual
 ---
 
-## Quarto
+## Introduction
 
 Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
 
-## Bullets
+## Design
 
 When you click the **Render** button a document will be generated that includes:
 
 -   Content authored with markdown
 -   Output from executable code
 
-## Code
+## Theory
 
 When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
 
 ```{r}
 1 + 1
 ```
+
+## Results
+
+
+## Conclusions
+
+
+## References
