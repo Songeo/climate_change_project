@@ -27,8 +27,8 @@ This project aims to evaluate the impact of taxes on reducing emissions. By anal
 
 Evaluate the impact of environmental taxation on CO2 emissions across multiple countries over time.
 
-$Hypothesis:$ The implementation of an environmental tax will significantly reduce CO2 emissions in the treated countries compared to the control countries.  
-$Outcome:$ Green gas (CO2) emissions (in million metric tons).  
+$Hypothesis:$ The implementation of an environmental tax will significantly reduce CO2 emissions in the treated countries compared to the control countries.\
+$Outcome:$ Green gas (CO2) emissions (in million metric tons).\
 $Treatment:$ Implementation of environmental taxation policies (0 for not treated, 1 for treated).
 
 ## Hypothesis
@@ -43,90 +43,82 @@ The climate data mainly used in this study is obtained from the Climate Change I
 
 We also accessed other general country information including the GDP per capita, population, urban population and industry level per GDP.
 
+
+The dataset comprises panel data with the following key variables:
+
+	•	Country: A unique identifier for each of the 188 countries.
+	•	Year: The time variable ranging from 2000 to 2022.
+	•	Treatment: A binary variable indicating whether a country received the treatment in a given year.
+	•	Outcome: The primary outcome variable of interest.
+	•	Covariates: A set of control variables that may influence the outcome.
+
+
+---------------
+
+## Missing Value in Covariates
+
+Visualization of missing observations.
+
+::: {style="text-align: center;"}
+<img src="/figures/nas_outcome.png" style="height: 400px;"/>
+:::
+
+---------------
+
+## Imputation Process
+
+Process:
+
+-   Function Definition: linear interpolation
+-   Filtering: selecting series with missing values
+-   Grouping and Imputation: imputation per country
+-   Verification: comparison of results
+
+Library used `imputeTS`.
+
+---------------
+
+### Imputation comparison
+
+Linear interpolation per country and covariate
+
+::: {style="text-align: center;"}
+<img src="/figures/imputation_comparison.png" style="height: 500px;"/>
+:::
+
+
+
 # Design
 
 Balanced panel data with staggered adoption of treatment with general pattern (switch on and off)
 
-- Staggered Adoption
-- Treatment Reversals
-- Modeling Dynamics
+-   Staggered Adoption
+-   Treatment Reversals
+-   Modeling Dynamics
 
-## Variables
 
-<div style="text-align: center;">
-  <img src="/figures/panelview_outcome_wgrl.png" style="height: 500px;" />
-</div>
+---------------
 
----
+## Outcome
 
-<div style="text-align: center;">
-  <img src="/figures/panelview_treatment_wgrl.png" style="height: 500px;" />
-</div>
+Relative value observed indexed by 2004 value per country.
 
-## Missing Value in Covariates
+::: {style="text-align: center;"}
+<img src="/figures/panelview_outcome_wgrl.png" style="height: 300px;"/>
+:::
 
-### GDP per Capita
+---------------
 
-<div style="text-align: center;">
-  <img src="/figures/covariate_pre_gdp_capita.png" style="height: 500px;" />
-</div>
+## Treatment
 
----
+Indicator variable if there is evidence of tax on popullation as a percentage of the national GDP
 
-### Population
+::: {style="text-align: center;"}
+<img src="/figures/panelview_treatment_wgrl.png" style="height: 400px;"/>
+:::
 
-<div style="text-align: center;">
-  <img src="/figures/covariate_pre_population.png" style="height: 500px;" />
-</div>
 
----
 
-### Industry Level (percentage of GDP)
-
-<div style="text-align: center;">
-  <img src="/figures/covariate_pre_gdp_industry.png" style="height: 500px;" />
-</div>
-
----
-
-### Urban Level (percentage of total population)
-
-<div style="text-align: center;">
-  <img src="/figures/covariate_pre_urban_pct.png" style="height: 500px;" />
-</div>
-
----
-
-### Renewable Energy (percentage of total energy consumption)
-
-<div style="text-align: center;">
-  <img src="/figures/covariate_pre_renewable_pct.png" style="height: 500px;" />
-</div>
-
----
-
-### NAs Overview
-
-<div style="text-align: center;">
-  <img src="/figures/nas_outcome.png" style="height: 500px;" />
-</div>
-
----
-
-### Imputation of Variables
-- Function Definition
-- Grouping and Imputation
-- Post-Imputation Evaluation
-- Visualization
-- Verification
-
----
-
-### Imputation Comparison
-
-<div style="text-align: center;">
-  <img src="/figures/imputation_comparison.png" style="height: 500px;" />
-</div>
 
 # Theory
 
@@ -138,17 +130,17 @@ $$
 Y_{it}(0) = \mathbf{X}_{it}’\beta + \alpha_i + \xi_t + \epsilon_{it}
 $$
 
-<div style="text-align: center;">
-  <img src="/figures/result_fe.png" style="height: 500px;" />
-</div>
+::: {style="text-align: center;"}
+<img src="/figures/result_fe.png" style="height: 500px;"/>
+:::
 
----
+------------------------------------------------------------------------
 
 ## FEct Panel Trend Assumptions (PTA)
 
-<div style="text-align: center;">
-  <img src="/figures/pta_plot_fe.png" style="height: 500px;" />
-</div>
+::: {style="text-align: center;"}
+<img src="/figures/pta_plot_fe.png" style="height: 500px;"/>
+:::
 
 ## Interactive fixed effects counterfactual estimator (IFEct)
 
@@ -156,56 +148,56 @@ $$
 Y_{it}(0) = \mathbf{X}_{it}’\beta + \alpha_i + \xi_t + \lambda_i’ f_t + \epsilon_{it}
 $$
 
-<div style="text-align: center;">
-  <img src="/figures/result_ife.png" style="height: 400px;" />
-</div>
+::: {style="text-align: center;"}
+<img src="/figures/result_ife.png" style="height: 400px;"/>
+:::
 
----
+------------------------------------------------------------------------
 
 ## IFEct Panel Trend Assumptions (PTA)
 
-<div style="text-align: center;">
-  <img src="/figures/pta_plot_ife.png" style="height: 500px;" />
-</div>
+::: {style="text-align: center;"}
+<img src="/figures/pta_plot_ife.png" style="height: 500px;"/>
+:::
 
 ## Matrix completion estimator (MC)
 
 $$
 Y(0) = X\beta + L + \epsilon 
-$$ 
-where ( L ) is a low-rank matrix approximating the untreated outcomes.
-
+$$ where ( L ) is a low-rank matrix approximating the untreated outcomes.
 
 $$
 \hat{L} = \arg \min_L \left[ \frac{1}{|O|} \sum_{(i,t) \in O} (Y_{it} - L_{it})^2 + \lambda_L \| L \| \right]
-$$ 
+$$
 
----
+------------------------------------------------------------------------
+
 ## Matrix completion estimator (MC) (cont'd)
-<div style="text-align: center;">
-  <img src="/figures/result_mc.png" style="height: 500px;" />
-</div>
+
+::: {style="text-align: center;"}
+<img src="/figures/result_mc.png" style="height: 500px;"/>
+:::
 
 ## MC Panel Trend Assumptions (PTA)
 
-<div style="text-align: center;">
-  <img src="/figures/pta_plot_mc.png" style="height: 500px;" />
-</div>
+::: {style="text-align: center;"}
+<img src="/figures/pta_plot_mc.png" style="height: 500px;"/>
+:::
 
 # Results
 
-<div style="text-align: center;">
-  <img src="/figures/att_summary.png" style="height: 500px;" />
-</div>
+::: {style="text-align: center;"}
+<img src="/figures/att_summary.png" style="height: 500px;"/>
+:::
 
 # References
 
-<div style="font-size: 0.7em;">
-1. Callaway, B., & Sant’Anna, P. H. (2021). Difference-in-Differences with multiple time periods. Journal of Econometrics. https://www.sciencedirect.com/science/article/abs/pii/S0304407621001445
-2. de Chaisemartin, C., & d’Haultfoeuille, X. (2020). Two-way fixed effects estimators with heterogeneous treatment effects. American Economic Review. https://www.nber.org/papers/w27431
-3. Liu, L., Wang, Y., & Xu, Y. (2022). A Practical Guide to Counterfactual Estimators for Causal Inference with Time-Series Cross-Sectional Data. Retrieved from https://tilburgsciencehub.com/topics/analyze/causal-inference/did/staggered-did/
-4. European Environment Agency. (2020). The role of environmental taxation. Retrieved from https://www.eea.europa.eu/publications/the-role-of-environmental-taxation
-5. Liu, L., Wang, Y., & Xu, Y. (2020). Generalized Synthetic Control Method: Causal Inference with Interactive Fixed Effects Models. Retrieved from https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3555463
-6. Xu, Y. (2020). fect: Fast Estimation of Causal Treatment Effects. Retrieved from https://github.com/xuyiqing/fect
-7. Lin, B. (2011). The effect of carbon tax on per capita CO2 emissions. Journal of Cleaner Production
-</div>
+::: {style="font-size: 0.7em;"}
+1.  Callaway, B., & Sant’Anna, P. H. (2021). Difference-in-Differences with multiple time periods. Journal of Econometrics. https://www.sciencedirect.com/science/article/abs/pii/S0304407621001445
+2.  de Chaisemartin, C., & d’Haultfoeuille, X. (2020). Two-way fixed effects estimators with heterogeneous treatment effects. American Economic Review. https://www.nber.org/papers/w27431
+3.  Liu, L., Wang, Y., & Xu, Y. (2022). A Practical Guide to Counterfactual Estimators for Causal Inference with Time-Series Cross-Sectional Data. Retrieved from https://tilburgsciencehub.com/topics/analyze/causal-inference/did/staggered-did/
+4.  European Environment Agency. (2020). The role of environmental taxation. Retrieved from https://www.eea.europa.eu/publications/the-role-of-environmental-taxation
+5.  Liu, L., Wang, Y., & Xu, Y. (2020). Generalized Synthetic Control Method: Causal Inference with Interactive Fixed Effects Models. Retrieved from https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3555463
+6.  Xu, Y. (2020). fect: Fast Estimation of Causal Treatment Effects. Retrieved from https://github.com/xuyiqing/fect
+7.  Lin, B. (2011). The effect of carbon tax on per capita CO2 emissions. Journal of Cleaner Production
+:::
