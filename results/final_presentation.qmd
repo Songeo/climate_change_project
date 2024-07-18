@@ -53,12 +53,14 @@ Balanced panel data with staggered adoption of treatment with general pattern (s
 
 ## Variables
 
+### CO2 Emission
 <div style="text-align: center;">
   <img src="/figures/panelview_outcome_wgrl.png" style="height: 500px;" />
 </div>
 
 ---
 
+### Tax Policies
 <div style="text-align: center;">
   <img src="/figures/panelview_treatment_wgrl.png" style="height: 500px;" />
 </div>
