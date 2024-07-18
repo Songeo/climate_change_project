@@ -27,7 +27,9 @@ This project aims to evaluate the impact of taxes on reducing emissions. By anal
 
 Evaluate the impact of environmental taxation on CO2 emissions across multiple countries over time.
 
-Hypothesis: The implementation of an environmental tax will significantly reduce CO2 emissions in the treated countries compared to the control countries.
+$Hypothesis:$ The implementation of an environmental tax will significantly reduce CO2 emissions in the treated countries compared to the control countries.
+$Outcome:$ Green gas (C02) emissions (in million metric tons). <br>
+$Treatment:$ Implementation of environmental taxation policies (0 for not treated, 1 for treated).
 
 ## Hypothesis
 
@@ -35,15 +37,20 @@ $H_0$: Implementing carbon tax policies has no significant impact on reducing CO
 
 $H_A$: Implementing carbon tax policies will significantly reduce CO2 emissions in treated countries compared to control countries
 
-# Design
-
-Balanced panel data with staggered adoption of treatment with general pattern (switch on and off)
-
 ## Data
 
 The climate data mainly used in this study is obtained from the Climate Change Indicators Dashboard, provided by the IMF. It aggregates metrics, including greenhouse gas emissions, mitigation, adaptation, weather, renewable energy and climate finance.
 
 We also accessed other general country information including the GDP per capita, population, urban population and industry level per GDP.
+
+# Design
+
+Balanced panel data with staggered adoption of treatment with general pattern (switch on and off)
+●Staggered Adoption
+
+●Treatment Reversals
+
+●Modeling Dynamics
 
 ## Variables
 
@@ -51,7 +58,32 @@ We also accessed other general country information including the GDP per capita,
 
 ------------------------------------------------------------------------
 
-## ![](/figures/panelview_treatment_wgrl.png)
+![](/figures/panelview_treatment_wgrl.png)
+
+## Missing Value in Covariates
+
+### GDP per Capita
+![](/figures/covariate_pre_gdp_capita.png)
+------------------------------------------------------------------------
+### Population
+![](/figures/covariate_pre_population.png)
+
+------------------------------------------------------------------------
+### Industry Level (percentage of GDP)
+![](/figures/covariate_pre_gdp_industry.png)
+------------------------------------------------------------------------
+### Urban Level (percentage of total population)
+![](/figures/covariate_pre_urban_pct.png)
+------------------------------------------------------------------------
+### Renewable Energy Level (percentage of total energy consumption)
+![](/figures/covariate_pre_renewable_pct.png)
+
+------------------------------------------------------------------------
+### NAs Overview
+![](/figures/nas_outcome.png)
+------------------------------------------------------------------------
+### Imputation Comparison
+![](/figures/imputation_comparison.png)
 
 # Theory
 
@@ -63,11 +95,15 @@ $$
 Y_{it}(0) = \mathbf{X}{it}’\beta + \alpha_i + \xi_t + \epsilon{it} 
 $$
 
+![](/figures/result_fe.png)
+
 ## Interactive fixed effects counterfactual estimator (IFEct)
 
 $$
 Y_{it}(0) = \mathbf{X}{it}’\beta + \alpha_i + \xi_t + \lambda_i’ f_t + \epsilon{it}
 $$
+
+![](/figures/result_ife.png) 
 
 ## Matrix completion estimator (MC)
 
@@ -77,8 +113,20 @@ $$ ,where ( L ) is a low-rank matrix approximating the untreated outcomes.
 
 $$
 \hat{L} = \arg \min_L \left[ \frac{1}{|O|} \sum_{(i,t) \in O} (Y_{it} - L_{it})^2 + \lambda_L \| L \| \right]
-$$ \# Results
+$$ 
 
-# Conclusions
+![](/figures/result_mc.png)
+
+# Results
+
+![](/figures/att_summary.png)
 
 # References
+
+	1.	Callaway, B., & Sant’Anna, P. H. (2021). Difference-in-Differences with multiple time periods. Journal of Econometrics. https://www.sciencedirect.com/science/article/abs/pii/S0304407621001445
+	2.	de Chaisemartin, C., & d’Haultfoeuille, X. (2020). Two-way fixed effects estimators with heterogeneous treatment effects. American Economic Review. https://www.nber.org/papers/w27431
+	3.	Liu, L., Wang, Y., & Xu, Y. (2022). A Practical Guide to Counterfactual Estimators for Causal Inference with Time-Series Cross-Sectional Data. Retrieved from https://tilburgsciencehub.com/topics/analyze/causal-inference/did/staggered-did/
+	4.	European Environment Agency. (2020). The role of environmental taxation. Retrieved from https://www.eea.europa.eu/publications/the-role-of-environmental-taxation
+	5.	Liu, L., Wang, Y., & Xu, Y. (2020). Generalized Synthetic Control Method: Causal Inference with Interactive Fixed Effects Models. Retrieved from https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3555463
+	6.	Xu, Y. (2020). fect: Fast Estimation of Causal Treatment Effects. Retrieved from https://github.com/xuyiqing/fect
+	7.	Lin, B. (2011). The effect of carbon tax on per capita CO2 emissions. Journal of Cleaner Production
