@@ -65,7 +65,7 @@ reports/*.pdf
 reports/*.snm
 reports/*.synctex.gz
 reports/*.toc
+*.zip
 
 # Ignore markdown files and their associated folders in reports folder
-reports/*.qmd
 reports/*_files/

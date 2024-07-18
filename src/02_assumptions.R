@@ -11,8 +11,6 @@ library(did)
 library(fixest)
 library(fect)
 
-
-
 # 1. DATA ----
 data_panel_final <- 
   read_csv("data/processed/panel_data_final.csv") |> 
@@ -20,14 +18,13 @@ data_panel_final <-
   group_by(iso3) |> 
   mutate(first_treat = ifelse(any(treatment == 1), min(year[treatment == 1]), 0),
          time_to_treatment = ifelse(any(treatment == 1), min(year[treatment == 1]), 3000) - year) |> 
-  mutate_at("treatment", factor)# |> 
+  #mutate_at("treatment", factor) |> 
   filter(iso3 != "GRL")
 
 data_panel_final |> filter(iso3 == "MEX") |> print(n = 45)
 data_panel_final |> filter(iso3 == "ABW") |> print(n = 45)
 data_panel_final |> summary()
 data_panel_final$outcome |> summary()
-
 
 # 2. VIS ----
 gg <- panelview(outcome ~ treatment, 
@@ -61,7 +58,6 @@ model_formula <- outcome ~ treatment +
 print(model_formula)
 
 # 4. ATT ----
-
 # event study design ----
 event_model <- feols(outcome ~ i(time_to_treatment, treatment, ref = -1) | iso3 + year, 
                      data = data_panel_final)
@@ -122,17 +118,24 @@ model_ife <- fect(model_formula,
                   se = T, 
                   nboots = 200, 
                   parallel = T, 
-                  loo = F)
+                  loo = T)
 
 model_ife
 
 plot(model_ife, 
      main = "Estimated ATT (IFEct)", 
      ylab = "Effect of D on Y", 
+     type = "gap", 
      cex.main = 0.8, 
      cex.lab = 0.8, 
      cex.axis = 0.8)
 
+# "gap" plots the estimated period-wise ATT (dynamic treatment effects)
+# "exit" plots the estimated period-wise switch-off effects, 
+# "status" shows the treatment status of all observations, 
+# "factors" plots the estimated factor and time fixed effects, 
+# "loadings" plots the estimated factor loadings and unit fixed effects, 
+# "calendar" plots the estimated treatment effects for each calendar period, and "box" visualizes the estimated individualistic treatment effects of observations.
 
 
 # matrix completion fixed effects model ----
@@ -146,7 +149,7 @@ model_mcf <- fect(model_formula,
                   se = T, 
                   nboots = 100, 
                   parallel = T, 
-                  loo = F)
+                  loo = T)
 
 model_mcf
 
