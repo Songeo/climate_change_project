@@ -27,15 +27,11 @@ This project aims to evaluate the impact of taxes on reducing emissions. By anal
 
 Evaluate the impact of environmental taxation on CO2 emissions across multiple countries over time.
 
-$Hypothesis:$ The implementation of an environmental tax will significantly reduce CO2 emissions in the treated countries compared to the control countries.\
-$Outcome:$ Green gas (CO2) emissions (in million metric tons).\
-$Treatment:$ Implementation of environmental taxation policies (0 for not treated, 1 for treated).
+**Hypothesis**
 
-## Hypothesis
+>$H_0$: Implementing carbon tax policies has no significant impact on reducing CO2 emissions
 
-$H_0$: Implementing carbon tax policies has no significant impact on reducing CO2 emissions
-
-$H_A$: Implementing carbon tax policies will significantly reduce CO2 emissions in treated countries compared to control countries
+>$H_A$: Implementing carbon tax policies will significantly reduce CO2 emissions in treated countries compared to control countries
 
 ## Data
 
@@ -131,7 +127,7 @@ Y_{it}(0) = \mathbf{X}_{it}’\beta + \alpha_i + \xi_t + \epsilon_{it}
 $$
 
 ::: {style="text-align: center;"}
-<img src="/figures/result_fe.png" style="height: 500px;"/>
+<img src="/figures/result_fe.jpeg" style="height: 400px;"/>
 :::
 
 ------------------------------------------------------------------------
@@ -149,7 +145,7 @@ Y_{it}(0) = \mathbf{X}_{it}’\beta + \alpha_i + \xi_t + \lambda_i’ f_t + \eps
 $$
 
 ::: {style="text-align: center;"}
-<img src="/figures/result_ife.png" style="height: 400px;"/>
+<img src="/figures/result_ife.jpeg" style="height: 400px;"/>
 :::
 
 ------------------------------------------------------------------------
@@ -175,7 +171,7 @@ $$
 ## Matrix completion estimator (MC) (cont'd)
 
 ::: {style="text-align: center;"}
-<img src="/figures/result_mc.png" style="height: 500px;"/>
+<img src="/figures/result_mc.jpeg" style="height: 400px;"/>
 :::
 
 ## MC Panel Trend Assumptions (PTA)
@@ -187,10 +183,33 @@ $$
 # Results
 
 ::: {style="text-align: center;"}
-<img src="/figures/att_summary.png" style="height: 500px;"/>
+<img src="/figures/att_summary.png" style="height: 400px;"/>
 :::
 
+
+
+--------------
+## Conclusions
+
+Hypothesis: 
+
+>$H_0$: Implementing carbon tax policies has no significant impact on reducing CO2 emissions
+
+
+
+- We cannot reject carbon tax policies has no significant impact on reducing CO2 emissions
+
+- The analysis with the three methods consistently reject the effect 
+
+- IFE and MC solve issues such as:
+  - Quitters
+  - Time variant covariates
+
+
+
 # References
+
+[Github repository](https://github.com/Songeo/climate_change_project/blob/main/README.md)
 
 ::: {style="font-size: 0.7em;"}
 1.  Callaway, B., & Sant’Anna, P. H. (2021). Difference-in-Differences with multiple time periods. Journal of Econometrics. https://www.sciencedirect.com/science/article/abs/pii/S0304407621001445
