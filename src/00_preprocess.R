@@ -177,18 +177,22 @@ data_panel <- read_csv("data/processed/panel_data.csv")
 
 
 # 3. TRANSFORMATIONS ----
+rescaling_year <- 2004
+
 data_panel_transformed <- 
   data_panel |> 
+  # transformations
+  mutate(renewable_pct = total_renewable/total_energy, 
+         urban_pct = urban_pop/population) |> 
   # union of min data in panel
   left_join(data_panel |> 
-              filter(year == min(data_panel$year)) |> 
-              select(iso3, c0200 = carbon_dioxide),
+              filter(year == rescaling_year) |> 
+              select(iso3, 
+                     carbon_dioxide_00 = carbon_dioxide),
             by = join_by(iso3)) |> 
-  # transformations
   mutate(treatment = ifelse( is.na(tax_gdp_ecgtep), 0, 1), 
-       outcome = carbon_dioxide/c0200,
-       renewable_pct = total_renewable/total_energy, 
-       urban_pct = urban_pop/population) |> 
+         outcome = carbon_dioxide/carbon_dioxide_00
+  ) |> 
   # select variables
   select( iso3, 
           year, 
@@ -203,7 +207,7 @@ data_panel_transformed <-
 data_panel_transformed$iso3 |> n_distinct()
 
 data_panel_transformed |> 
-  filter(outcome > 200 ) |> 
+  # filter(outcome > 200 ) |> 
   summary()
 
 data_panel_transformed |> 
@@ -416,9 +420,53 @@ data_panel_imputed |>
 data_panel_imputed$iso3 |> n_distinct()
 
 
+# write table
+data_panel_imputed
+data_panel_imputed |> write_csv("data/processed/panel_imputated_data.csv")
+data_panel_imputed <- read_csv("data/processed/panel_imputated_data.csv")
+
+
+# 5. COVARIATES ---- 
+data_panel_imputed |> summary()
+
+rescaling_year
+data_panel_standarized <- 
+  data_panel_imputed |> 
+  # union of min data in panel
+  left_join(data_panel_imputed |> 
+              filter(year == rescaling_year) |> 
+              select(iso3, 
+                     population_00 = population,
+                     gdp_capita_00 = gdp_capita,
+                     gdp_industry_00 = gdp_industry,
+                     urban_pct_00 = urban_pct,
+                     renewable_pct_00 = renewable_pct),
+            by = join_by(iso3)) |> 
+  # transformations
+  mutate(population    = ifelse(population_00 != 0, population/population_00, 0),
+         gdp_capita    = ifelse(gdp_capita_00 != 0, gdp_capita/gdp_capita_00, 0),
+         gdp_industry  = ifelse(gdp_industry_00 != 0, gdp_industry/gdp_industry_00, 0),
+         urban_pct     = ifelse(urban_pct_00 != 0, urban_pct/urban_pct_00, 0),
+         renewable_pct = ifelse(renewable_pct_00 != 0, renewable_pct/renewable_pct_00, 0)
+  ) |> 
+  # select variables
+  select( iso3, 
+          year, 
+          outcome, 
+          treatment, 
+          population, 
+          gdp_capita, 
+          gdp_industry, 
+          urban_pct, 
+          renewable_pct) 
+
+
+
+
+
 # FINAL DATA ----
 
-data_panel_final <- data_panel_imputed
+data_panel_final <- data_panel_standarized
 data_panel_final |> write_csv("data/processed/panel_data_final.csv")
 data_panel_final <- read_csv("data/processed/panel_data_final.csv")
 
