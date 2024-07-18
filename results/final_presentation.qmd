@@ -42,14 +42,16 @@ Balanced panel data with staggered adoption of treatment with general pattern (s
 ## Data
 
 
-
 ## Variables
 
-![outcome](/figures/panelview_treatment_wgrl.png)
+### Outcome
 
-<img src="/../results/figures/panelview_treatment_wgrl.png" alt="School Logo" style="width: 150px; float: right;"/>
+![](/figures/panelview_outcome_wgrl.png)
 
---
+### Treatment
+
+![](/figures/panelview_treatment_wgrl.png)
+>>>>>>> a60b22605af1155df333b7f762d98749a27e488b
 
 # Theory
 
