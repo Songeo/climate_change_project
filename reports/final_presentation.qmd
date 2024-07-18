@@ -1,7 +1,7 @@
 ---
 title: "The Impact of Environmental Taxation on CO2 Emissions"
 subtitle: "Statistical Methods for Causal Inference"
-author: "Sonia Mendizábal and Wanchao Zhao"
+author: "**Sonia Mendizábal and Wanchao Zhao**"
 date: "2024-07"
 format: 
   revealjs:
