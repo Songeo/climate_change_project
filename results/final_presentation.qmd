@@ -24,6 +24,18 @@ editor: visual
 This project aims to evaluate the impact of taxes on reducing emissions. By analyzing historical data, policy implementations, and economic indicators, we will assess the effectiveness of carbon taxes in promoting sustainable environmental practices and reducing carbon footprints.
 
 
+## Objective
+
+Evaluate the impact of environmental taxation on CO2 emissions across multiple countries over time.
+
+Hypothesis: The implementation of an environmental tax will significantly reduce CO2 emissions in the treated countries compared to the control countries.
+
+## Hypothesis
+$H_0$:  Implementing carbon tax policies has no significant impact on reducing CO2 emissions
+
+$H_A$: Implementing carbon tax policies will significantly reduce CO2 emissions in treated countries compared to control countries
+
+
 # Design
 
 Balanced panel data with staggered adoption of treatment with general pattern (switch on and off)
@@ -35,6 +47,14 @@ Balanced panel data with staggered adoption of treatment with general pattern (s
 ## Variables
 
 
+
+![outcome](/figures/panelview_treatment_wgrl.png)
+
+<img src="/../results/figures/panelview_treatment_wgrl.png" alt="School Logo" style="width: 150px; float: right;"/>
+
+
+--
+
 # Theory
 
 We use a simple framework of counterfactual estimation for causal inference with time-series cross-sectional data, in which we estimate the average treatment effect on the treated by directly imputing counterfactual outcomes for treated observations.
@@ -44,8 +64,12 @@ We use a simple framework of counterfactual estimation for causal inference with
 ## Fixed effects counterfactual estimator (FEct)
 
 
+
 ## Interactive fixed effects counterfactual estimator (IFEct)
 
+$$
+Y_{it}(0) = \mathbf{X}{it}’\beta + \alpha_i + \xi_t + \lambda_i’ f_t + \epsilon{it}
+$$
 
 ## Matrix completion estimator (MC)
 
