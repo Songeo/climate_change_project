@@ -57,33 +57,12 @@ model_formula <- outcome ~ treatment +
   urban_pct+  renewable_pct
 print(model_formula)
 
+
 # 4. ATT ----
-# event study design ----
-event_model <- feols(outcome ~ i(time_to_treatment, treatment, ref = -1) | iso3 + year, 
-                     data = data_panel_final)
-summary(event_model)
-
-
-# staggered adoption DiD ----
-att_gt <- att_gt(yname = "outcome",
-                 tname = "year",
-                 idname = "iso3num",
-                 gname = "first_treat",
-                 data = data_panel_final,
-                 control_group = "nevertreated")
-
-#' Dropped 88 units that were already treated in the first period.
-#' Check groups: 2005,2008,2010,2017.
-#' Not returning pre-test Wald statistic due to singular covariance matrix
-
-summary(att_gt)
-ggdid(att_gt)
-
-
-
 # individual-level fixed effects and treatment interactions ----
-interaction_model <- feols(outcome ~ treatment | iso3 + year, data = data_panel_final)
-summary(interaction_model)
+individual_model <- feols(outcome ~ treatment | iso3 + year, data = data_panel_final)
+summary(individual_model)
+
 
 # factor-augmented fixed effects model ----
 model_fe <- fect(model_formula,
@@ -132,13 +111,6 @@ plot(model_ife,
      cex.lab = 0.8, 
      cex.axis = 0.8)
 
-# "gap" plots the estimated period-wise ATT (dynamic treatment effects)
-# "exit" plots the estimated period-wise switch-off effects, 
-# "status" shows the treatment status of all observations, 
-# "factors" plots the estimated factor and time fixed effects, 
-# "loadings" plots the estimated factor loadings and unit fixed effects, 
-# "calendar" plots the estimated treatment effects for each calendar period, and "box" visualizes the estimated individualistic treatment effects of observations.
-
 
 # matrix completion fixed effects model ----
 model_mcf <- fect(model_formula,
@@ -149,14 +121,14 @@ model_mcf <- fect(model_formula,
                   CV = T, 
                   r = c(0, 5), 
                   se = T, 
-                  nboots = 100, 
+                  nboots = 200, 
                   parallel = T, 
                   loo = T)
 
 model_mcf
 
 plot(model_mcf, 
-     main = "Estimated ATT (CFct)", 
+     main = "Estimated ATT (MCct)", 
      ylab = "Effect of D on Y", 
      bound = "both", 
      cex.main = 0.8, 
@@ -165,7 +137,57 @@ plot(model_mcf,
 
 
 
-# summary 
+# summary
+library(broom)
+confint(interaction_model)
+
 model_fe
 model_ife
 model_mcf
+
+summary_tab <- 
+  tibble(
+  method = c("baseline", "fe", "ife", "mc"),
+  att = c(-0.083436, 
+          0.08039, 
+          0.0205020,
+          -0.04380),
+  se    = c(0.072308, 
+            0.10662,
+            0.11165,
+            0.10438),
+  ci_lb = c(-0.2260859, 
+            -0.1286,
+            -0.2393,
+            -0.2484),
+  ci_ub = c(0.05921331, 
+            0.2894,
+            0.1983,
+            0.1608),
+  p_value = c(0.25002, 
+              0.4509,
+              0.8543,
+              0.6748)
+)
+
+
+gg <- 
+  summary_tab |> 
+  ggplot(aes( x= att, y = method)) + 
+  geom_vline(xintercept = 0, 
+             linetype = 2, 
+             color = "gray60") + 
+  geom_errorbarh(aes(xmin = ci_lb, xmax = ci_ub), height = .2) + 
+  geom_point(size = 3, 
+             color = "red", 
+             aes(size = p_value)) +
+  theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 12)) +
+  labs(title = "Estimated ATT of D on Y ",
+       x = "Year",
+       y = "Method") 
+gg
+ggsave(plot = gg, 
+       filename = "results/figures/att_summary.png", 
+       width = 7, 
+       height = 3.5)
