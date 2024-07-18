@@ -1,6 +1,5 @@
-.reveal .title-slide {
-  background-image: url('https://images.app.goo.gl/KkkEb4havpeJHyVw5');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: right top;
+.reveal .slides section {
+  background: url('figures/vu_logo.png') no-repeat top right;
+  background-size: 300px; /* Adjust size as needed */
+  padding-top: 100px; /* Adjust to avoid overlap with content */
 }
