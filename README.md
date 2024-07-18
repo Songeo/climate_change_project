@@ -23,10 +23,6 @@ The directory structure for this project is as follows:
 ├── results
 │   ├── figures
 │   ├── tables
-├── reports
-│   ├── figures
-│   ├── draft.md
-│   ├── final_report.md
 ├── setup.R
 ├── LICENSE
 ```
@@ -39,15 +35,13 @@ The directory structure for this project is as follows:
 
 - **src**: R scripts for the project.
   - `00_preprocess.R`: Script with preprocessing of data. Create data/processed/panel_data.csv
+  - `01_eda.R`: Script with exploratory analysis
+  - `02_assumptions.R`: script with `fect` implementation
+  - `02_DID_PTA.R`: script with DiD implementation
 
 - **results**: Contains results of the analysis.
   - `figures`: Graphs and plots generated from the analysis.
   - `tables`: Tables summarizing the findings.
-
-- **reports**: Drafts and final reports.
-  - `figures`: Figures used in the reports.
-  - `draft.md`: Initial draft of the report.
-  - `final_report.md`: Final version of the report.
 
 ## Getting Started
 
