@@ -47,19 +47,21 @@ We also accessed other general country information including the GDP per capita,
 
 ## Variables
 
-
 ![](/figures/panelview_outcome_wgrl.png)
 
----
+------------------------------------------------------------------------
 
-![](/figures/panelview_treatment_wgrl.png)
----
+## ![](/figures/panelview_treatment_wgrl.png)
 
 # Theory
 
 We use a simple framework of counterfactual estimation for causal inference with time-series cross-sectional data, in which we estimate the average treatment effect on the treated by directly imputing counterfactual outcomes for treated observations.
 
 ## Fixed effects counterfactual estimator (FEct)
+
+$$
+Y_{it}(0) = \mathbf{X}{it}’\beta + \alpha_i + \xi_t + \epsilon{it} 
+$$
 
 ## Interactive fixed effects counterfactual estimator (IFEct)
 
@@ -69,7 +71,13 @@ $$
 
 ## Matrix completion estimator (MC)
 
-# Results
+$$
+Y(0) = X\beta + L + \epsilon 
+$$ ,where ( L ) is a low-rank matrix approximating the untreated outcomes.
+
+$$
+\hat{L} = \arg \min_L \left[ \frac{1}{|O|} \sum_{(i,t) \in O} (Y_{it} - L_{it})^2 + \lambda_L \| L \| \right]
+$$ \# Results
 
 # Conclusions
 
