@@ -2,37 +2,61 @@
 title: "The Impact of Environmental Taxation on CO2 Emissions"
 subtitle: "Statistical Methods for Causal Inference"
 author: "**Sonia Mendizábal and Wanchao Zhao**"
-date: "2024-07"
+date: "2024-07-19"
 format: 
   revealjs:
+    slide-number: true
+    toc: true
+    toc-depth: 1
+    toc-title: Agenda
+    toc-location: right
+    number-sections: false
+    fontsize: 1.9em
+    chalkboard: 
+      buttons: false
+    preview-links: auto
     css: styles.css
 editor: visual
 ---
 
+# Introduction
 
-## Introduction
-
-Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
-
-## Design
-
-When you click the **Render** button a document will be generated that includes:
-
--   Content authored with markdown
--   Output from executable code
-
-## Theory
-
-When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
-
-```{r}
-1 + 1
-```
-
-## Results
+This project aims to evaluate the impact of taxes on reducing emissions. By analyzing historical data, policy implementations, and economic indicators, we will assess the effectiveness of carbon taxes in promoting sustainable environmental practices and reducing carbon footprints.
 
 
-## Conclusions
+# Design
+
+Balanced panel data with staggered adoption of treatment with general pattern (switch on and off)
 
 
-## References
+## Data
+
+
+## Variables
+
+
+# Theory
+
+We use a simple framework of counterfactual estimation for causal inference with time-series cross-sectional data, in which we estimate the average treatment effect on the treated by directly imputing counterfactual outcomes for treated observations.
+
+
+
+## Fixed effects counterfactual estimator (FEct)
+
+
+## Interactive fixed effects counterfactual estimator (IFEct)
+
+
+## Matrix completion estimator (MC)
+
+
+
+
+# Results
+
+
+
+
+# Conclusions
+
+# References
