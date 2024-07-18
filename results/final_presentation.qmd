@@ -97,14 +97,14 @@ Balanced panel data with staggered adoption of treatment with general pattern (s
 -   Modeling Dynamics
 
 
----------------
 
 ## Outcome
+
 
 Relative value observed indexed by 2004 value per country.
 
 ::: {style="text-align: center;"}
-<img src="/figures/panelview_outcome_wgrl.png" style="height: 300px;"/>
+<img src="/figures/panelview_outcome_wgrl.png" style="height: 400px;"/>
 :::
 
 ---------------
