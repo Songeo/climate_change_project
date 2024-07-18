@@ -103,6 +103,7 @@ model_fe
 plot(model_fe, 
      main = "Estimated ATT (FEct)", 
      ylab = "Effect of D on Y", 
+     bound = "both", 
      cex.main = 0.8, 
      cex.lab = 0.8, 
      cex.axis = 0.8)
@@ -126,6 +127,7 @@ plot(model_ife,
      main = "Estimated ATT (IFEct)", 
      ylab = "Effect of D on Y", 
      type = "gap", 
+     bound = "both", 
      cex.main = 0.8, 
      cex.lab = 0.8, 
      cex.axis = 0.8)
@@ -156,6 +158,7 @@ model_mcf
 plot(model_mcf, 
      main = "Estimated ATT (CFct)", 
      ylab = "Effect of D on Y", 
+     bound = "both", 
      cex.main = 0.8, 
      cex.lab = 0.8, 
      cex.axis = 0.8)
