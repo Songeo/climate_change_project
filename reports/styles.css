@@ -1,5 +1,11 @@
+/* Apply the logo only to the title slide */
 .reveal .slides section {
   background: url('figures/vu_logo.png') no-repeat top right;
   background-size: 200px; /* Adjust size as needed */
   padding-top: 100px; /* Adjust to avoid overlap with content */
+}
+
+/* Prevent the logo from appearing on other slides */
+.reveal .slides section:not(:first-of-type) {
+  background: none;
 }
