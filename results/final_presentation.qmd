@@ -56,7 +56,7 @@ The dataset comprises panel data with the following key variables:
 Visualization of missing observations.
 
 ::: {style="text-align: center;"}
-<img src="/figures/nas_outcome.png" style="height: 400px;"/>
+<img src="figures/nas_outcome.png" style="height: 400px;"/>
 :::
 
 ---------------
@@ -79,7 +79,7 @@ Library used `imputeTS`.
 Linear interpolation per country and covariate
 
 ::: {style="text-align: center;"}
-<img src="/figures/imputation_comparison.png" style="height: 500px;"/>
+<img src="figures/imputation_comparison.png" style="height: 500px;"/>
 :::
 
 
@@ -100,7 +100,7 @@ Balanced panel data with staggered adoption of treatment with general pattern (s
 Relative value observed indexed by 2004 value per country.
 
 ::: {style="text-align: center;"}
-<img src="/figures/panelview_outcome_wgrl.png" style="height: 400px;"/>
+<img src="figures/panelview_outcome_wgrl.png" style="height: 400px;"/>
 :::
 
 ---------------
@@ -110,7 +110,7 @@ Relative value observed indexed by 2004 value per country.
 Indicator variable if there is evidence of tax on popullation as a percentage of the national GDP
 
 ::: {style="text-align: center;"}
-<img src="/figures/panelview_treatment_wgrl.png" style="height: 400px;"/>
+<img src="figures/panelview_treatment_wgrl.png" style="height: 400px;"/>
 :::
 
 
@@ -118,7 +118,13 @@ Indicator variable if there is evidence of tax on popullation as a percentage of
 
 # Theory
 
-We use a simple framework of counterfactual estimation for causal inference with time-series cross-sectional data, in which we estimate the average treatment effect on the treated by directly imputing counterfactual outcomes for treated observations.
+We use a simple framework of counterfactual estimation for causal inference with time-series cross-sectional data, in which we estimate the average treatment effect on the treated by directly imputing counterfactual outcomes for treated observations. We are introducing three estimators from R package "fect".
+
+::: {style="font-size: 0.7em;"}
+Liu, L., Wang, Y., & Xu, Y. (2022). A Practical Guide to Counterfactual Estimators for Causal Inference with Time-Series Cross-Sectional Data. 
+:::
+
+----------------------
 
 ## Fixed effects counterfactual estimator (FEct)
 
@@ -127,7 +133,7 @@ Y_{it}(0) = \mathbf{X}_{it}’\beta + \alpha_i + \xi_t + \epsilon_{it}
 $$
 
 ::: {style="text-align: center;"}
-<img src="/figures/result_fe.jpeg" style="height: 400px;"/>
+<img src="figures/result_fe.jpeg" style="height: 400px;"/>
 :::
 
 ------------------------------------------------------------------------
@@ -135,7 +141,7 @@ $$
 ## FEct Panel Trend Assumptions (PTA)
 
 ::: {style="text-align: center;"}
-<img src="/figures/pta_plot_fe.png" style="height: 500px;"/>
+<img src="figures/pta_plot_fe.png" style="height: 500px;"/>
 :::
 
 ## Interactive fixed effects counterfactual estimator (IFEct)
@@ -145,7 +151,7 @@ Y_{it}(0) = \mathbf{X}_{it}’\beta + \alpha_i + \xi_t + \lambda_i’ f_t + \eps
 $$
 
 ::: {style="text-align: center;"}
-<img src="/figures/result_ife.jpeg" style="height: 400px;"/>
+<img src="figures/result_ife.jpeg" style="height: 400px;"/>
 :::
 
 ------------------------------------------------------------------------
@@ -153,7 +159,7 @@ $$
 ## IFEct Panel Trend Assumptions (PTA)
 
 ::: {style="text-align: center;"}
-<img src="/figures/pta_plot_ife.png" style="height: 500px;"/>
+<img src="figures/pta_plot_ife.png" style="height: 500px;"/>
 :::
 
 ## Matrix completion estimator (MC)
@@ -171,19 +177,19 @@ $$
 ## Matrix completion estimator (MC) (cont'd)
 
 ::: {style="text-align: center;"}
-<img src="/figures/result_mc.jpeg" style="height: 400px;"/>
+<img src="figures/result_mc.jpeg" style="height: 400px;"/>
 :::
 
 ## MC Panel Trend Assumptions (PTA)
 
 ::: {style="text-align: center;"}
-<img src="/figures/pta_plot_mc.png" style="height: 500px;"/>
+<img src="figures/pta_plot_mc.png" style="height: 500px;"/>
 :::
 
 # Results
 
 ::: {style="text-align: center;"}
-<img src="/figures/att_summary.png" style="height: 400px;"/>
+<img src="figures/att_summary.png" style="height: 400px;"/>
 :::
 
 
