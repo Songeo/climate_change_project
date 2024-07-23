@@ -261,11 +261,6 @@ data_panel_filtered$iso3 |> n_distinct()
 data_panel_filtered |> summary()
 
 data_panel_filtered |> 
-  group_by(treatment) |> 
-  summarise(max_tmt = max(treatment),
-            min_tmt = min(treatment)) 
-
-data_panel_filtered |> 
   group_by(iso3) |> 
   summarise(n_yrs = n_distinct(year)) |> 
   filter(n_yrs != 22)
@@ -462,6 +457,9 @@ data_panel_standarized <-
 # summary of data
 data_panel_standarized
 data_panel_standarized$iso3 |>  n_distinct()
+
+data_panel_standarized |> 
+  summary()
 
 data_panel_standarized |> 
   group_by(iso3) |> 
