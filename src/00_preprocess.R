@@ -7,6 +7,8 @@ library(imputeTS)
 theme_set(theme_bw())
 
 # 1. DATA ----
+rescaling_year <- 2004
+
 iso <- 
   read_csv("data/raw/list_country_iso_code.csv") |> 
   rename_all(~ gsub(" ", "_", tolower(.))) |> 
@@ -177,8 +179,6 @@ data_panel <- read_csv("data/processed/panel_data.csv")
 
 
 # 3. TRANSFORMATIONS ----
-rescaling_year <- 2004
-
 data_panel_transformed <- 
   data_panel |> 
   # transformations
@@ -202,7 +202,8 @@ data_panel_transformed <-
           gdp_capita, 
           gdp_industry, 
           urban_pct, 
-          renewable_pct) 
+          renewable_pct,
+          tax_gdp_ecgtep) 
 
 data_panel_transformed$iso3 |> n_distinct()
 
@@ -233,7 +234,8 @@ nas_tab <-
   group_by(iso3, name) |> 
   count() |> 
   pivot_wider(names_from = name, 
-              values_from = n) |> 
+              values_from = n,
+              values_fill = 0) |> 
   mutate(max_total = max(c(gdp_industry, 
                         gdp_capita, 
                         population, 
@@ -245,15 +247,12 @@ nas_tab |>
   filter(max_total < 22) |> 
   nrow()
 
-nas_tab |> 
-  filter(max_total >= 22) |> 
-  nrow()
+nas_tab |> nrow()
 
 # filtering missing values in all years in at least one variable
 data_panel_filtered <- 
   data_panel_transformed |> 
   anti_join(nas_tab |> 
-              filter(max_total >= 22) |> 
               select(iso3), 
             by = join_by(iso3))
 
@@ -287,6 +286,7 @@ data_panel_filtered <- read_csv("data/processed/panel_filtered_data.csv")
 
 # 4. IMPUTATION ----
 
+if(FALSE){
 
 # missing values visualization
 tab <- 
@@ -418,21 +418,21 @@ data_panel_imputed |>
 
 data_panel_imputed$iso3 |> n_distinct()
 
+data_panel_imputed |> summary()
 
 # write table
 data_panel_imputed
 data_panel_imputed |> write_csv("data/processed/panel_imputated_data.csv")
 data_panel_imputed <- read_csv("data/processed/panel_imputated_data.csv")
-
+}
 
 # 5. COVARIATES ---- 
-data_panel_imputed |> summary()
-
 rescaling_year
+
 data_panel_standarized <- 
-  data_panel_imputed |> 
+  data_panel_filtered |> 
   # union of min data in panel
-  left_join(data_panel_imputed |> 
+  left_join(data_panel_filtered |> 
               filter(year == rescaling_year) |> 
               select(iso3, 
                      population_00 = population,
@@ -459,8 +459,18 @@ data_panel_standarized <-
           urban_pct, 
           renewable_pct) 
 
+# summary of data
+data_panel_standarized
+data_panel_standarized$iso3 |>  n_distinct()
 
-
+data_panel_standarized |> 
+  group_by(iso3) |> 
+  summarise(num_obs = n(),
+            num_yrs = n_distinct(year),
+            num_tmt = n_distinct(treatment),
+            min_tmt = min(treatment),
+            max_tmt = max(treatment)) |> 
+  print(n = Inf)
 
 
 # FINAL DATA ----
