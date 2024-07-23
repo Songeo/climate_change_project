@@ -17,9 +17,9 @@ data_panel_final <-
   mutate(iso3num = as.numeric(factor(iso3)) ) |> 
   group_by(iso3) |> 
   mutate(first_treat = ifelse(any(treatment == 1), min(year[treatment == 1]), 0),
-         time_to_treatment = ifelse(any(treatment == 1), min(year[treatment == 1]), 3000) - year) |> 
+         time_to_treatment = ifelse(any(treatment == 1), min(year[treatment == 1]), 3000) - year) 
   #mutate_at("treatment", factor) |> 
-  filter(iso3 != "GRL")
+  # filter(iso3 != "GRL")
 
 data_panel_final |> filter(iso3 == "MEX") |> print(n = 45)
 data_panel_final |> filter(iso3 == "ABW") |> print(n = 45)
@@ -79,6 +79,9 @@ model_fe <- fect(model_formula,
 
 model_fe
 
+fe_att_lb <- model_fe$att.avg - qnorm(0.975)*sd(model_fe$att.avg.boot)
+fe_att_ub <- model_fe$att.avg + qnorm(0.975)*sd(model_fe$att.avg.boot)
+
 gg <- 
   plot(model_fe, 
      main = "Estimated ATT (FEct)", 
@@ -86,12 +89,14 @@ gg <-
      bound = "both", 
      cex.main = 0.8, 
      cex.lab = 0.8, 
-     cex.axis = 0.8)
+     cex.axis = 0.8,
+     tost.threshold = min(fe_att_lb, fe_att_ub))
 gg
 ggsave(plot = gg, 
        filename = "results/figures/pta_plot_fe.png", 
        width = 9, 
        height = 6.5)
+
 
 # interactive fixed effects model ----
 model_ife <- fect(model_formula,
@@ -108,6 +113,10 @@ model_ife <- fect(model_formula,
 
 model_ife
 
+ife_att_lb <- model_ife$att.avg - qnorm(0.975)*sd(model_ife$att.avg.boot)
+ife_att_ub <- model_ife$att.avg + qnorm(0.975)*sd(model_ife$att.avg.boot)
+
+
 gg <- 
   plot(model_ife, 
      main = "Estimated ATT (IFEct)", 
@@ -116,7 +125,8 @@ gg <-
      bound = "both", 
      cex.main = 0.8, 
      cex.lab = 0.8, 
-     cex.axis = 0.8)
+     cex.axis = 0.8,
+     tost.threshold = min(ife_att_lb, ife_att_ub))
 gg
 ggsave(plot = gg, 
        filename = "results/figures/pta_plot_ife.png", 
@@ -138,6 +148,9 @@ model_mcf <- fect(model_formula,
 
 model_mcf
 
+mcf_att_lb <- model_mcf$att.avg - qnorm(0.975)*sd(model_mcf$att.avg.boot)
+mcf_att_ub <- model_mcf$att.avg + qnorm(0.975)*sd(model_mcf$att.avg.boot)
+
 gg <- 
   plot(model_mcf, 
      main = "Estimated ATT (MCct)", 
@@ -145,7 +158,8 @@ gg <-
      bound = "both", 
      cex.main = 0.8, 
      cex.lab = 0.8, 
-     cex.axis = 0.8)
+     cex.axis = 0.8,
+     tost.threshold = min(ife_att_lb, ife_att_ub))
 
 gg
 ggsave(plot = gg, 
@@ -166,26 +180,27 @@ summary_tab <-
   tibble(
   method = c("baseline", "fe", "ife", "mc"),
   att = c(-0.083436, 
-          0.2021, 
-          -0.2630,
-          0.2488),
+          model_fe$att.avg, 
+          model_ife$att.avg,
+          model_mcf$att.avg),
   se    = c(0.072308, 
-            0.2918,
-            0.2731 ,
-            0.4422),
+            model_fe$est.avg[2],
+            model_ife$est.avg[2] ,
+            model_mcf$est.avg[2]),
   ci_lb = c(-0.2260859, 
-            -0.3698,
-            -0.7983,
-            -0.6179),
+            model_fe$est.avg[3],
+            model_ife$est.avg[3] ,
+            model_mcf$est.avg[3]),
   ci_ub = c(0.05921331, 
-            0.7741,
-            0.2723,
-            1.116),
+            model_fe$est.avg[4],
+            model_ife$est.avg[4] ,
+            model_mcf$est.avg[4]),
   p_value = c(0.25002, 
-              0.4885,
-              0.3356,
-              0.5736)
+              model_fe$est.avg[5],
+              model_ife$est.avg[5] ,
+              model_mcf$est.avg[5])
 )
+
 
 
 gg <- 
