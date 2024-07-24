@@ -169,9 +169,9 @@ ggsave(plot = gg,
 
 # summary
 library(broom)
-confint(interaction_model)
+confint(individual_model)
 
-interaction_model
+individual_model
 model_fe
 model_ife
 model_mcf
