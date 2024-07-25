@@ -10,6 +10,8 @@ library(patchwork)
 library(did)
 library(fixest)
 library(fect)
+library(broom)
+
 
 # 1. DATA ----
 data_panel_final <- 
@@ -167,40 +169,49 @@ ggsave(plot = gg,
        width = 9, 
        height = 6.5)
 
-# summary
-library(broom)
-confint(individual_model)
+
+# summary ----
 
 individual_model
+
 model_fe
 model_ife
 model_mcf
 
+indiv_coef <- 
+  tidy(individual_model) |> 
+  filter(term == 'treatment') |> 
+  flatten()
+
+indiv_ci <- 
+  confint(individual_model)['treatment',] |> 
+  flatten()
+
 summary_tab <- 
   tibble(
   method = c("baseline", "fe", "ife", "mc"),
-  att = c(-0.083436, 
+  att = c(indiv_coef$estimate,
           model_fe$att.avg, 
           model_ife$att.avg,
           model_mcf$att.avg),
-  se    = c(0.072308, 
+  se    = c(indiv_coef$std.error, 
             model_fe$est.avg[2],
             model_ife$est.avg[2] ,
             model_mcf$est.avg[2]),
-  ci_lb = c(-0.2260859, 
+  ci_lb = c(indiv_ci$`2.5 %`, 
             model_fe$est.avg[3],
             model_ife$est.avg[3] ,
             model_mcf$est.avg[3]),
-  ci_ub = c(0.05921331, 
+  ci_ub = c(indiv_ci$`97.5 %`, 
             model_fe$est.avg[4],
             model_ife$est.avg[4] ,
             model_mcf$est.avg[4]),
-  p_value = c(0.25002, 
+  p_value = c(indiv_coef$p.value, 
               model_fe$est.avg[5],
               model_ife$est.avg[5] ,
               model_mcf$est.avg[5])
 )
-
+summary_tab
 
 
 gg <- 
