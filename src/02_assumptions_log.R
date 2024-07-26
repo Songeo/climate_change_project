@@ -16,8 +16,10 @@ library(broom)
 # 1. DATA ----
 data_panel_final <- 
   read_csv("data/processed/panel_data_final.csv") |> 
+  #mutate(iso3num = as.numeric(factor(iso3)),
+         #l_outcome = log(outcome + 34)) |> 
   mutate(iso3num = as.numeric(factor(iso3)),
-         l_outcome = log(outcome + 34)) |> 
+         l_outcome = ifelse(outcome > 0, log(outcome), NA)) |> 
   group_by(iso3) |> 
   mutate(first_treat = ifelse(any(treatment == 1), min(year[treatment == 1]), 0),
          time_to_treatment = ifelse(any(treatment == 1), min(year[treatment == 1]), 3000) - year) 
@@ -246,3 +248,6 @@ ggsave(plot = gg,
        filename = "results/figures/att_summary.png", 
        width = 7, 
        height = 3.5)
+
+
+
