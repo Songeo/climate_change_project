@@ -95,18 +95,20 @@ model_fe <- fect(model_formula,
 
 model_fe
 
+#Obtain 95% CI bounds
 fe_att_lb <- model_fe$att.avg - qnorm(0.975)*sd(model_fe$att.avg.boot)
 fe_att_ub <- model_fe$att.avg + qnorm(0.975)*sd(model_fe$att.avg.boot)
 
+#Select the bound which is closer to zero to be our equivalence boundary
 gg <- 
   plot(model_fe, 
      main = "Estimated ATT (FEct)", 
-     ylab = "Effect of D on Y", 
-     bound = "both", 
+     ylab = "Effect of Taxation on CO2 Emission", 
      cex.main = 0.8, 
      cex.lab = 0.8, 
      cex.axis = 0.8,
-     tost.threshold = min(fe_att_lb, fe_att_ub))
+     bound = "both", 
+     tost.threshold = min(abs(fe_att_lb), abs(fe_att_ub)))
 gg
 ggsave(plot = gg, 
        filename = "results/figures/pta_plot_fe.png", 
@@ -114,6 +116,8 @@ ggsave(plot = gg,
        height = 6.5)
 
 
+plot(model_fe, type = "equiv", ylim = c(-1,1), 
+     cex.legend = 0.6, main = "Testing Pre-Trend (FEct)", cex.text = 0.8)
 # interactive fixed effects model ----
 model_ife <- fect(model_formula,
                   data = data_panel_final,
@@ -136,18 +140,21 @@ ife_att_ub <- model_ife$att.avg + qnorm(0.975)*sd(model_ife$att.avg.boot)
 gg <- 
   plot(model_ife, 
      main = "Estimated ATT (IFEct)", 
-     ylab = "Effect of D on Y", 
+     ylab = "Effect of Taxation on CO2 Emission", 
      type = "gap", 
      bound = "both", 
      cex.main = 0.8, 
      cex.lab = 0.8, 
      cex.axis = 0.8,
-     tost.threshold = min(ife_att_lb, ife_att_ub))
+     tost.threshold = min(abs(ife_att_lb), abs(ife_att_ub)))
 gg
 ggsave(plot = gg, 
        filename = "results/figures/pta_plot_ife.png", 
        width = 9, 
        height = 6.5)
+
+plot(model_ife, type = "equiv", ylim = c(-1,1), 
+     cex.legend = 0.6, main = "Testing Pre-Trend (IFEct)", cex.text = 0.8)
 
 # matrix completion fixed effects model ----
 model_mcf <- fect(model_formula,
@@ -170,18 +177,21 @@ mcf_att_ub <- model_mcf$att.avg + qnorm(0.975)*sd(model_mcf$att.avg.boot)
 gg <- 
   plot(model_mcf, 
      main = "Estimated ATT (MCct)", 
-     ylab = "Effect of D on Y", 
+     ylab = "Effect of Taxation on CO2 Emission", 
      bound = "both", 
      cex.main = 0.8, 
      cex.lab = 0.8, 
      cex.axis = 0.8,
-     tost.threshold = min(ife_att_lb, ife_att_ub))
+     tost.threshold = min(abs(mcf_att_lb), abs(mcf_att_ub)))
 
 gg
 ggsave(plot = gg, 
        filename = "results/figures/pta_plot_mc.png", 
        width = 9, 
        height = 6.5)
+
+plot(model_mcf, type = "equiv", ylim = c(-1,1), 
+     cex.legend = 0.6, main = "Testing Pre-Trend (MCct)", cex.text = 0.8)
 
 # summary ----
 individual_model
@@ -229,7 +239,7 @@ summary_tab
 
 gg <- 
   summary_tab |> 
-  filter(method != 'baseline') |> 
+  #filter(method != 'baseline') |> 
   ggplot(aes( x= att, y = method)) + 
   geom_vline(xintercept = 0, 
              linetype = 2, 
@@ -240,14 +250,92 @@ gg <-
              aes(size = p_value)) +
   theme(axis.text.x = element_text(size = 10),
         axis.text.y = element_text(size = 12)) +
-  labs(title = "Estimated ATT of D on Y ",
-       x = "Year",
+  labs(title = "Effect of Taxation on CO2 Emission",
+       x = "ATT",
        y = "Method") 
 gg
-ggsave(plot = gg, 
+ ggsave(plot = gg, 
        filename = "results/figures/att_summary.png", 
        width = 7, 
        height = 3.5)
+ 
+# placebo test ----
 
+## FEct
+model_fe_p =  fect(model_formula,
+                   data = data_panel_final,
+                   index = c("iso3", "year"),
+                   method = "fe", 
+                   force = "two-way",
+                   CV = 0, 
+                   se = T, 
+                   nboots = 200, 
+                   parallel = T, 
+                   placeboTest = T,
+                   placebo.period = c(-2, 0))
+ 
+gg <- plot(model_fe_p,
+           cex.text = 0.8,
+           ylim = c(-1.5,0.5),
+           stats = c("placebo.p","equiv.p"), 
+           main = "Estimated ATT (FE)")
+gg
+ggsave(plot = gg, 
+       filename = "results/figures/Placebo_fe.png", 
+       width = 9, 
+       height = 6.5)
 
+## IFEct
+model_ife_p <- fect(model_formula,
+                   data = data_panel_final,
+                   index = c("iso3", "year"),
+                   method = "ife", 
+                   force = "two-way",
+                   CV = 0, 
+                   r = 2,
+                   se = T, 
+                   nboots = 200, 
+                   parallel = T, 
+                   placeboTest = T,
+                   placebo.period = c(-2, 0))
+gg <- plot(model_ife_p,
+           cex.text = 0.8,
+           ylim = c(-1.5,0.5), 
+           stats = c("placebo.p","equiv.p"), 
+           main = "Estimated ATT (IFE)")
+gg
+ggsave(plot = gg, 
+       filename = "results/figures/Placebo_ife.png", 
+       width = 9, 
+       height = 6.5)
 
+## MCct
+model_mcf_p <- fect(model_formula,
+                    data = data_panel_final,
+                    index = c("iso3", "year"),
+                    method = "mc", 
+                    force = "two-way",
+                    CV = 0, 
+                    lambda = model_mcf$lambda.cv,
+                    se = T, 
+                    nboots = 200, 
+                    parallel = T, 
+                    placeboTest = T,
+                    placebo.period = c(-2, 0))
+
+gg <- plot(model_mcf_p,
+           cex.text = 0.8,
+           ylim = c(-1.5,0.5), 
+           stats = c("placebo.p","equiv.p"), 
+           main = "Estimated ATT (MC)")
+gg
+ggsave(plot = gg, 
+       filename = "results/figures/Placebo_mc.png", 
+       width = 9, 
+       height = 6.5)
+
+#Quitters ---
+
+plot(model_fe, type = "exit", ylim = c(-1.5,1.5), main = "Estimated ATT (FE) on Quitters")
+plot(model_ife, type = "exit", ylim = c(-1.5,1.5), main = "Estimated ATT (IFE) on Quitters")
+plot(model_mcf, type = "exit", ylim = c(-1.5,1.5), main = "Estimated ATT (MC) on Quitters")
