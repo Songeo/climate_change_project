@@ -16,20 +16,28 @@ library(broom)
 # 1. DATA ----
 data_panel_final <- 
   read_csv("data/processed/panel_data_final.csv") |> 
-  #mutate(iso3num = as.numeric(factor(iso3)),
-         #l_outcome = log(outcome + 34)) |> 
   mutate(iso3num = as.numeric(factor(iso3)),
-         l_outcome = ifelse(outcome > 0, log(outcome), NA)) |> 
+         l_outcome = log(outcome + 34)) |> 
+  #mutate(iso3num = as.numeric(factor(iso3)),
+  #       l_outcome = ifelse(outcome > 0, log(outcome), NA)) |> 
   group_by(iso3) |> 
   mutate(first_treat = ifelse(any(treatment == 1), min(year[treatment == 1]), 0),
          time_to_treatment = ifelse(any(treatment == 1), min(year[treatment == 1]), 3000) - year) 
   #mutate_at("treatment", factor) |> 
   # filter(iso3 != "GRL")
 
-data_panel_final |> filter(iso3 == "MEX") |> print(n = 45)
-data_panel_final |> filter(iso3 == "ABW") |> print(n = 45)
 data_panel_final |> summary()
 data_panel_final$outcome |> summary()
+data_panel_final$l_outcome |> summary()
+
+
+data_panel_final$iso3 |> n_distinct()
+
+
+data_panel_final |> 
+  filter(l_outcome > 4) |> 
+  select(iso3) |> 
+  unique()
 
 # 2. VIS ----
 gg <- panelview(outcome ~ treatment, 
@@ -118,6 +126,7 @@ ggsave(plot = gg,
 
 plot(model_fe, type = "equiv", ylim = c(-1,1), 
      cex.legend = 0.6, main = "Testing Pre-Trend (FEct)", cex.text = 0.8)
+
 # interactive fixed effects model ----
 model_ife <- fect(model_formula,
                   data = data_panel_final,
