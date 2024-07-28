@@ -263,11 +263,12 @@ gg <-
        x = "ATT",
        y = "Method") 
 gg
- ggsave(plot = gg, 
+ggsave(plot = gg, 
        filename = "results/figures/att_summary.png", 
        width = 7, 
        height = 3.5)
  
+
 # placebo test ----
 
 ## FEct
@@ -342,6 +343,7 @@ ggsave(plot = gg,
        filename = "results/figures/Placebo_mc.png", 
        width = 9, 
        height = 6.5)
+
 
 #Quitters ---
 
